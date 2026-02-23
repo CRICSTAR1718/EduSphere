@@ -4,11 +4,20 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import "./styles/global.css";
+import { NoticeProvider } from "./context/NoticeContext";
+import { EventProvider } from "./context/EventContext";
+import { TimetableProvider } from "./context/TimetableContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <AuthProvider>
-      <App />
+      <NoticeProvider>
+        <EventProvider>
+          <TimetableProvider>
+            <App />
+          </TimetableProvider>
+        </EventProvider>
+      </NoticeProvider>
     </AuthProvider>
   </BrowserRouter>
 );

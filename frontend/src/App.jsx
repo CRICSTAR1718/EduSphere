@@ -2,6 +2,7 @@ import { useContext } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { AuthContext } from "./context/AuthContext";
 
+
 function App() {
   const { loading } = useContext(AuthContext);
 

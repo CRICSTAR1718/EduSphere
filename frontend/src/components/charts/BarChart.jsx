@@ -19,7 +19,8 @@ ChartJS.register(
     Legend
 );
 
-function BarChart({ labels, dataValues, title }) {
+function BarChart({ labels = [], dataValues = [], title }) {
+
     const data = {
         labels,
         datasets: [
@@ -28,21 +29,42 @@ function BarChart({ labels, dataValues, title }) {
                 data: dataValues,
                 backgroundColor: "#6366f1",
                 borderRadius: 8,
+                barThickness: 40,
             }
         ]
     };
 
     const options = {
         responsive: true,
+        maintainAspectRatio: false,   
         plugins: {
             legend: { display: false },
-            maintainAspectRatio: false,
+            tooltip: {
+                backgroundColor: "#1e293b",
+                titleColor: "#ffffff",
+                bodyColor: "#ffffff",
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: "#e5e7eb",
+                },
+            },
+            x: {
+                grid: {
+                    display: false,
+                },
+            },
         },
     };
 
-    return <div className="w-full max-w-3xl mx-auto h-64 sm:h-80">
-        <Bar data={data} options={options} />
-    </div>
+    return (
+        <div className="w-full max-w-3xl mx-auto h-64 sm:h-80">
+            <Bar data={data} options={options} />
+        </div>
+    );
 }
 
 export default BarChart;

@@ -1,34 +1,77 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import StatCard from "../../components/common/StatCard";
-import PieChart from "../../components/charts/PieChart";
+import ReportsAnalytics from "../../components/admin/ReportsAnalytics";
+import AcademicCalendar from "../../components/admin/AcademicCalendar";
+import NoticeManagement from "../../components/admin/NoticeManagement";
+import RoleManagement from "../../components/admin/RoleManagement";
+import UserManagement from "../../components/admin/UserManagement";
+import Loader from "../../components/common/Loader";
+import ErrorMessage from "../../components/common/ErrorMessage";
+import { useEffect, useState } from "react";
+import { getAdminStats } from "../../services/adminService";
+import NoticeWidget from "../../components/common/NoticeWidget";
+import EventWidget from "../../components/common/EventWidget";
 
 function AdminDashboard() {
+
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        getAdminStats()
+            .then(data => setStats(data))
+            .catch(() => setError("Failed to load admin data"))
+            .finally(() => setLoading(false));
+    }, []);
+
+    if (loading) {
+        return (
+            <DashboardLayout>
+                <Loader />
+            </DashboardLayout>
+        );
+    }
+
+    if (error) {
+        return (
+            <DashboardLayout>
+                <ErrorMessage message={error} />
+            </DashboardLayout>
+        );
+    }
+
     return (
         <DashboardLayout>
+            <div className="space-y-8 animate-fadeIn">
 
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <StatCard title="Total Students" value="320" />
-                <StatCard title="Total Faculty" value="28" />
-                <StatCard title="Active Notices" value="5" />
-            </div>
-
-            {/* System Distribution */}
-            <div className="bg-white p-8 rounded-2xl shadow-md">
-                <h3 className="text-lg font-semibold text-slate-700 mb-6">
-                    System Distribution
-                </h3>
-
-                <div className="flex justify-center">
-                    <div className="w-80 h-80">
-                        <PieChart
-                            labels={["Students", "Faculty", "Admins"]}
-                            dataValues={[320, 28, 5]}
-                        />
-                    </div>
+                {/* KPI Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <StatCard title="Total Students" value={stats.students} />
+                    <StatCard title="Total Faculty" value={stats.faculty} />
+                    <StatCard title="Active Notices" value={stats.notices} />
                 </div>
-            </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <NoticeWidget />
+                    <EventWidget />
+                </div>
 
+                {/* Reports */}
+                <ReportsAnalytics />
+
+                {/* Calendar + Notices */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <AcademicCalendar />
+                    <NoticeManagement />
+                </div>
+
+                {/* Roles + Users */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <RoleManagement />
+                    <UserManagement />
+                </div>
+
+            </div>
         </DashboardLayout>
     );
 }

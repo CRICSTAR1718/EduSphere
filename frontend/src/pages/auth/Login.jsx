@@ -7,6 +7,7 @@ function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [role, setRole] = useState("student"); // Added role state
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -16,7 +17,8 @@ function Login() {
         setIsSubmitting(true);
 
         try {
-            await login({ email, password });
+            // Note: role is selected but backend currently uses email/password
+            await login({ email, password, role });
         } catch (err) {
             setError(err.response?.data?.message || "Login failed. Please try again.");
         } finally {
@@ -49,6 +51,24 @@ function Login() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Role Selector */}
+                    <div>
+                        <label className="block text-sm text-slate-600 mb-1">
+                            Login As
+                        </label>
+                        <select
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                        >
+                            <option value="student">Student</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="admin">Admin</option>
+                            <option value="parent">Parent</option>
+                            <option value="warden">Warden</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label className="block text-sm text-slate-600 mb-1">
                             Email
