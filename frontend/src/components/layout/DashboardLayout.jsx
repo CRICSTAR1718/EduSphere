@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import Chatbot from "../common/Chatbot";
 
 function DashboardLayout({ children }) {
     const [open, setOpen] = useState(false);
@@ -34,6 +35,8 @@ function DashboardLayout({ children }) {
                 </div>
             </div>
 
+            {/* Chatbot Widget */}
+            <Chatbot />
         </div>
     );
 }
