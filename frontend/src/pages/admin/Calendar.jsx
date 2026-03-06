@@ -1,5 +1,4 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
-
 function Calendar() {
     return (
         <DashboardLayout>
