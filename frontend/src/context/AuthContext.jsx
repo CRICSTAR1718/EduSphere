@@ -50,6 +50,10 @@ export const AuthProvider = ({ children }) => {
             navigate("/faculty/dashboard");
         } else if (dummyUser.role === "admin") {
             navigate("/admin/dashboard");
+        } else if (dummyUser.role === "parent") {
+            navigate("/parent/dashboard");
+        } else if (dummyUser.role === "warden") {
+            navigate("/warden/dashboard");
         } else {
             navigate("/login");
         }
