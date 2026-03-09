@@ -13,11 +13,9 @@ import NoticeWidget from "../../components/common/NoticeWidget";
 import EventWidget from "../../components/common/EventWidget";
 
 function AdminDashboard() {
-
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
     useEffect(() => {
         getAdminStats()
             .then(data => setStats(data))
