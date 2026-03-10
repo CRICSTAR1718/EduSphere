@@ -38,6 +38,9 @@ app.use("/api/auth", require("./routes/authRoutes"));
 // Student routes
 app.use("/api/student", require("./routes/studentRoutes"));
 
+// Admin routes
+app.use("/api/admin", require("./routes/adminRoutes"));
+
 // ==================== ERROR HANDLING ====================
 
 // 404 handler
