@@ -36,5 +36,5 @@ const timetableEntrySchema = new mongoose.Schema(
         timestamps: true,
     }
 );
-
+// exports module
 module.exports = mongoose.model("Timetable", timetableEntrySchema);
