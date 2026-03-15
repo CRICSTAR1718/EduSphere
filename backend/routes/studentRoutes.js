@@ -59,5 +59,5 @@ router.get("/courses", getCourses);
 
 // GET /api/student/exams — Get upcoming exams
 router.get("/exams", getExams);
-
+// exports module
 module.exports = router;
