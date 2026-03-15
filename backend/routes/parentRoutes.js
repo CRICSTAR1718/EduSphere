@@ -31,5 +31,5 @@ router.get("/gatepasses", getWardGatepasses);
 
 // Notifications
 router.get("/notifications", getNotifications);
-
+// exports module
 module.exports = router;
