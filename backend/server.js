@@ -91,7 +91,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// ==================== START SERVER ====================
+// ================== START SERVER ==================
 
 const PORT = process.env.PORT || 5000;
 
