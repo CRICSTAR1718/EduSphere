@@ -74,11 +74,11 @@ const updateProfile = async (req, res) => {
 // @access  Private (student)
 const getAttendance = async (req, res) => {
     try {
-        const studentId = req.user.id;
+        const studentId = req.user._id;
 
         // Aggregate attendance by subject
         const attendance = await Attendance.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: "$subject",
@@ -209,11 +209,11 @@ const getGrievances = async (req, res) => {
 // @access  Private (student)
 const getDashboardStats = async (req, res) => {
     try {
-        const studentId = req.user.id;
+        const studentId = req.user._id;
 
         // Overall attendance percentage
         const attendanceData = await Attendance.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: null,
@@ -232,7 +232,7 @@ const getDashboardStats = async (req, res) => {
 
         // Average GPA (simplified: average marks / 10)
         const resultsData = await Result.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: null,
@@ -254,7 +254,7 @@ const getDashboardStats = async (req, res) => {
 
         // Subject-wise attendance for chart
         const subjectAttendance = await Attendance.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: "$subject",
