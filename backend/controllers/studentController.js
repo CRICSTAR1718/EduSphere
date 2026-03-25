@@ -8,6 +8,7 @@ const Fee = require("../models/Fee");
 const Course = require("../models/Course");
 const Exam = require("../models/Exam");
 const Enrollment = require("../models/Enrollment");
+const mongoose = require("mongoose");
 
 // ==================== DASHBOARD & PROFILE ====================
 
@@ -74,7 +75,7 @@ const updateProfile = async (req, res) => {
 // @access  Private (student)
 const getAttendance = async (req, res) => {
     try {
-        const studentId = req.user._id;
+        const studentId = new mongoose.Types.ObjectId(req.user._id);
 
         // Aggregate attendance by subject
         const attendance = await Attendance.aggregate([
@@ -209,7 +210,7 @@ const getGrievances = async (req, res) => {
 // @access  Private (student)
 const getDashboardStats = async (req, res) => {
     try {
-        const studentId = req.user._id;
+        const studentId = new mongoose.Types.ObjectId(req.user._id);
 
         // Overall attendance percentage
         const attendanceData = await Attendance.aggregate([
