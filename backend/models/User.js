@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema(
         email: {
             type: String,
             required: [true, "Email is required"],
-            unique: true,
             lowercase: true,
             trim: true,
         },
@@ -45,6 +44,11 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        student: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null,
+        },
     },
     {
         timestamps: true,
@@ -64,5 +68,8 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
+// Combined unique index for email and role to allow shared credentials
+userSchema.index({ email: 1, role: 1 }, { unique: true });
+
 // exports module
 module.exports = mongoose.model("User", userSchema);

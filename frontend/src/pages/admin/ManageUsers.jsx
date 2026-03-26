@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { getUsers, createUser, updateUser, deleteUser } from "../../services/adminService";
 
@@ -21,6 +21,7 @@ const blankForm = {
     semester: "",
     enrollmentNo: "",
     role: "student",
+    student: "",
 };
 
 function ManageUsers() {
@@ -36,13 +37,14 @@ function ManageUsers() {
     const [formData, setFormData] = useState({ ...blankForm });
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState("");
+    const [allStudents, setAllStudents] = useState([]); // For parent association
 
     // Delete confirmation
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
     // ─── Fetch users ───
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -56,17 +58,27 @@ function ManageUsers() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [roleFilter, search]);
+
+    const fetchAllStudents = useCallback(async () => {
+        try {
+            const data = await getUsers({ role: "student" });
+            setAllStudents(data.users || []);
+        } catch (err) {
+            console.error("Failed to fetch students", err);
+        }
+    }, []);
 
     useEffect(() => {
         fetchUsers();
-    }, [roleFilter]);
+    }, [fetchUsers]);
+
+    useEffect(() => {
+        fetchAllStudents();
+    }, [fetchAllStudents]);
 
     // Debounced search
-    useEffect(() => {
-        const timer = setTimeout(() => fetchUsers(), 400);
-        return () => clearTimeout(timer);
-    }, [search]);
+    // (Removed as fetchUsers now depends on search and is called in useEffect)
 
     // ─── Open modal for add ───
     const openAddModal = (role) => {
@@ -88,6 +100,7 @@ function ManageUsers() {
             semester: user.semester || "",
             enrollmentNo: user.enrollmentNo || "",
             role: user.role || "student",
+            student: user.student?._id || user.student || "",
         });
         setFormError("");
         setShowModal(true);
@@ -148,6 +161,7 @@ function ManageUsers() {
         { key: "all", label: "All Users" },
         { key: "student", label: "Students" },
         { key: "faculty", label: "Faculty" },
+        { key: "parent", label: "Parents" },
     ];
 
     return (
@@ -176,6 +190,15 @@ function ManageUsers() {
                                 <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                             </svg>
                             Add Faculty
+                        </button>
+                        <button
+                            onClick={() => openAddModal("parent")}
+                            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200 flex items-center gap-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                            </svg>
+                            Add Parent
                         </button>
                     </div>
                 </div>
@@ -237,8 +260,8 @@ function ManageUsers() {
                                         <th className="p-4 text-left font-semibold">Name</th>
                                         <th className="p-4 text-left font-semibold">Email</th>
                                         <th className="p-4 text-left font-semibold">Role</th>
-                                        <th className="p-4 text-left font-semibold">Department</th>
-                                        <th className="p-4 text-left font-semibold">Enrollment No</th>
+                                        <th className="p-4 text-left font-semibold">Dept / Ward</th>
+                                        <th className="p-4 text-left font-semibold">ID / Reg No</th>
                                         <th className="p-4 text-left font-semibold">Status</th>
                                         <th className="p-4 text-center font-semibold">Actions</th>
                                     </tr>
@@ -265,10 +288,21 @@ function ManageUsers() {
                                                 </span>
                                             </td>
                                             <td className="p-4 text-slate-600">
-                                                {user.department || "—"}
+                                                {user.role === 'parent' ? (
+                                                    <div className="flex flex-col">
+                                                        <span className="text-indigo-600 font-medium">{user.student?.name || "—"}</span>
+                                                        <span className="text-[10px] text-slate-400">Parent of</span>
+                                                    </div>
+                                                ) : (
+                                                    user.department || "—"
+                                                )}
                                             </td>
                                             <td className="p-4 text-slate-600">
-                                                {user.enrollmentNo || "—"}
+                                                {user.role === 'parent' ? (
+                                                    user.student?.enrollmentNo || "—"
+                                                ) : (
+                                                    user.enrollmentNo || "—"
+                                                )}
                                             </td>
                                             <td className="p-4">
                                                 <span
@@ -324,9 +358,7 @@ function ManageUsers() {
                             <h2 className="text-xl font-bold text-slate-800">
                                 {editingUser
                                     ? `Edit ${editingUser.name}`
-                                    : formData.role === "student"
-                                    ? "Add New Student"
-                                    : "Add New Faculty"}
+                                    : `Add New ${formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}`}
                             </h2>
                             <button
                                 onClick={() => setShowModal(false)}
@@ -383,13 +415,15 @@ function ManageUsers() {
                                 placeholder="e.g. +91 9876543210"
                             />
 
-                            <FormField
-                                label="Department"
-                                name="department"
-                                value={formData.department}
-                                onChange={handleChange}
-                                placeholder="e.g. Computer Science"
-                            />
+                            {formData.role !== "parent" && (
+                                <FormField
+                                    label="Department"
+                                    name="department"
+                                    value={formData.department}
+                                    onChange={handleChange}
+                                    placeholder="e.g. Computer Science"
+                                />
+                            )}
 
                             {/* Student-only fields */}
                             {formData.role === "student" && (
@@ -410,6 +444,31 @@ function ManageUsers() {
                                         placeholder="e.g. EN2024001"
                                     />
                                 </>
+                            )}
+
+                            {/* Parent-only fields: Student Selection */}
+                            {formData.role === "parent" && (
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                                        Connected Student
+                                    </label>
+                                    <select
+                                        name="student"
+                                        value={formData.student}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-sm"
+                                    >
+                                        <option value="">Select a student...</option>
+                                        {allStudents.map(student => (
+                                            <option key={student._id} value={student._id}>
+                                                {student.name} ({student.enrollmentNo || "No Roll No"})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p className="text-[10px] text-slate-400 mt-1">
+                                        Select the student this parent is connected to.
+                                    </p>
+                                </div>
                             )}
 
                             {/* Role selector (only in edit mode) */}
@@ -451,7 +510,7 @@ function ManageUsers() {
                                         ? "Saving..."
                                         : editingUser
                                         ? "Update User"
-                                        : `Add ${formData.role === "student" ? "Student" : "Faculty"}`}
+                                        : `Add ${formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}`}
                                 </button>
                             </div>
                         </form>

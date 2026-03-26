@@ -54,7 +54,10 @@ const getUsers = async (req, res) => {
             ];
         }
 
-        const users = await User.find(query).select("-password").sort({ createdAt: -1 });
+        const users = await User.find(query)
+            .select("-password")
+            .populate("student", "name enrollmentNo")
+            .sort({ createdAt: -1 });
 
         res.status(200).json({ count: users.length, users });
     } catch (error) {
@@ -68,18 +71,18 @@ const getUsers = async (req, res) => {
 // @access  Private/Admin
 const createUser = async (req, res) => {
     try {
-        const { name, email, password, role, phone, department, semester, enrollmentNo } = req.body;
+        const { name, email, password, role, phone, department, semester, enrollmentNo, student } = req.body;
 
         if (!name || !email || !password) {
             return res.status(400).json({ message: "Name, email and password are required" });
         }
 
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email, role: role || "student" });
         if (userExists) {
-            return res.status(400).json({ message: "User already exists with this email" });
+            return res.status(400).json({ message: "User already exists with this email and role" });
         }
 
-        const user = await User.create({
+        const userData = {
             name,
             email,
             password,
@@ -88,7 +91,14 @@ const createUser = async (req, res) => {
             department,
             semester,
             enrollmentNo,
-        });
+        };
+
+        // If it's a parent, add the student reference
+        if (role === 'parent' && student) {
+            userData.student = student;
+        }
+
+        const user = await User.create(userData);
 
         res.status(201).json({
             message: "User created successfully",
@@ -111,19 +121,39 @@ const createUser = async (req, res) => {
 // @access  Private/Admin
 const updateUser = async (req, res) => {
     try {
-        const { name, email, role, phone, department, semester, enrollmentNo, isActive } = req.body;
+        const { name, email, role, phone, department, semester, enrollmentNo, isActive, student } = req.body;
 
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
+        // Check if email/role change would cause a duplicate
+        const newEmail = email || user.email;
+        const newRole = role || user.role;
+        
+        if (newEmail !== user.email || newRole !== user.role) {
+            const userExists = await User.findOne({ 
+                email: newEmail, 
+                role: newRole,
+                _id: { $ne: user._id }
+            });
+            if (userExists) {
+                return res.status(400).json({ message: "User already exists with this email and role" });
+            }
+        }
+
         user.name = name || user.name;
-        user.email = email || user.email;
-        if (role) user.role = role;
+        user.email = newEmail;
+        user.role = newRole;
         user.phone = phone !== undefined ? phone : user.phone;
         user.department = department !== undefined ? department : user.department;
         user.semester = semester !== undefined ? semester : user.semester;
         user.enrollmentNo = enrollmentNo !== undefined ? enrollmentNo : user.enrollmentNo;
         if (isActive !== undefined) user.isActive = isActive;
+        
+        // Handle parent-student association
+        if (user.role === 'parent' && student !== undefined) {
+            user.student = student;
+        }
 
         const updatedUser = await user.save();
 
