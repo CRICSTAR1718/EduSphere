@@ -28,7 +28,7 @@ function ManageUsers() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [roleFilter, setRoleFilter] = useState("all");
+    const [roleFilter, setRoleFilter] = useState("student");
     const [search, setSearch] = useState("");
 
     // Modal state
@@ -49,7 +49,7 @@ function ManageUsers() {
             setLoading(true);
             setError(null);
             const params = {};
-            if (roleFilter !== "all") params.role = roleFilter;
+            if (roleFilter) params.role = roleFilter;
             if (search.trim()) params.search = search.trim();
             const data = await getUsers(params);
             setUsers(data.users || []);
@@ -158,10 +158,11 @@ function ManageUsers() {
 
     // ─── Filter tabs ───
     const tabs = [
-        { key: "all", label: "All Users" },
         { key: "student", label: "Students" },
         { key: "faculty", label: "Faculty" },
+        { key: "admin", label: "Admin" },
         { key: "parent", label: "Parents" },
+        { key: "warden", label: "Warden" },
     ];
 
     return (
@@ -249,7 +250,7 @@ function ManageUsers() {
                         <div className="text-center py-16">
                             <p className="text-slate-400 text-lg">No users found</p>
                             <p className="text-slate-300 text-sm mt-1">
-                                Add a student or faculty to get started.
+                                Add a user of this role to get started.
                             </p>
                         </div>
                     ) : (
