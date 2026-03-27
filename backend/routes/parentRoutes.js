@@ -8,6 +8,7 @@ const {
     getWardResults,
     getWardFees,
     getWardGatepasses,
+    updateWardGatepassStatus,
     getNotifications,
 } = require("../controllers/parentController");
 
@@ -28,6 +29,7 @@ router.get("/fees", getWardFees);
 
 // Ward's Gatepasses
 router.get("/gatepasses", getWardGatepasses);
+router.put("/gatepasses/:id", updateWardGatepassStatus);
 
 // Notifications
 router.get("/notifications", getNotifications);

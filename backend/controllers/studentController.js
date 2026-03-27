@@ -318,9 +318,10 @@ const requestGatepass = async (req, res) => {
             reason,
             outDate: new Date(outDate),
             inDate: new Date(inDate),
+            status: "pending_parent",
         });
 
-        res.status(201).json({ message: "Gatepass requested successfully", gatepass });
+        res.status(201).json({ message: "Gatepass requested successfully. Awaiting parent approval.", gatepass });
     } catch (error) {
         console.error("Request gatepass error:", error.message);
         res.status(500).json({ message: "Server error", error: error.message });

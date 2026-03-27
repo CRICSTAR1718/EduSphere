@@ -261,7 +261,9 @@ function ManageUsers() {
                                         <th className="p-4 text-left font-semibold">Name</th>
                                         <th className="p-4 text-left font-semibold">Email</th>
                                         <th className="p-4 text-left font-semibold">Role</th>
-                                        <th className="p-4 text-left font-semibold">Dept / Ward</th>
+                                        <th className="p-4 text-left font-semibold">
+                                            {roleFilter === "parent" ? "Parent of" : "Dept / Ward"}
+                                        </th>
                                         <th className="p-4 text-left font-semibold">ID / Reg No</th>
                                         <th className="p-4 text-left font-semibold">Status</th>
                                         <th className="p-4 text-center font-semibold">Actions</th>
@@ -290,10 +292,7 @@ function ManageUsers() {
                                             </td>
                                             <td className="p-4 text-slate-600">
                                                 {user.role === 'parent' ? (
-                                                    <div className="flex flex-col">
-                                                        <span className="text-indigo-600 font-medium">{user.student?.name || "—"}</span>
-                                                        <span className="text-[10px] text-slate-400">Parent of</span>
-                                                    </div>
+                                                    <span className="text-indigo-600 font-medium">{user.student?.name || "—"}</span>
                                                 ) : (
                                                     user.department || "—"
                                                 )}

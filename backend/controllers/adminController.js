@@ -121,7 +121,7 @@ const createUser = async (req, res) => {
 // @access  Private/Admin
 const updateUser = async (req, res) => {
     try {
-        const { name, email, role, phone, department, semester, enrollmentNo, isActive, student } = req.body;
+        const { name, email, password, role, phone, department, semester, enrollmentNo, isActive, student } = req.body;
 
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: "User not found" });
@@ -149,6 +149,11 @@ const updateUser = async (req, res) => {
         user.semester = semester !== undefined ? semester : user.semester;
         user.enrollmentNo = enrollmentNo !== undefined ? enrollmentNo : user.enrollmentNo;
         if (isActive !== undefined) user.isActive = isActive;
+        
+        // Handle password update
+        if (password) {
+            user.password = password;
+        }
         
         // Handle parent-student association
         if (user.role === 'parent' && student !== undefined) {

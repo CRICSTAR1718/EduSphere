@@ -37,10 +37,10 @@ const getDashboardStats = async (req, res) => {
                 ? `${Math.round((attendanceData[0].attended / attendanceData[0].total) * 100)}%`
                 : "0%";
 
-        // Pending gatepasses
+        // Pending gatepasses (awaiting parent action)
         const pendingGatepasses = await Gatepass.countDocuments({
             student: wardId,
-            status: "pending",
+            status: "pending_parent",
         });
 
         // Pending fees
@@ -168,12 +168,49 @@ const getWardGatepasses = async (req, res) => {
         }
 
         const gatepasses = await Gatepass.find({ student: wardId })
+            .populate("student", "name enrollmentNo department")
             .populate("warden", "name")
             .sort({ createdAt: -1 });
 
         res.status(200).json({ count: gatepasses.length, gatepasses });
     } catch (error) {
         console.error("Parent Get Gatepasses Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// @desc    Approve or reject a ward's gatepass
+// @route   PUT /api/parent/gatepasses/:id
+// @access  Private/Parent
+const updateWardGatepassStatus = async (req, res) => {
+    try {
+        const { status, comments } = req.body;
+
+        if (!status || !["approved_by_parent", "rejected_by_parent"].includes(status)) {
+            return res.status(400).json({ message: "Status must be 'approved_by_parent' or 'rejected_by_parent'" });
+        }
+
+        const gatepass = await Gatepass.findById(req.params.id);
+        if (!gatepass) return res.status(404).json({ message: "Gatepass not found" });
+
+        // Ensure the gatepass belongs to the parent's ward
+        const parent = await User.findById(req.user.id);
+        if (gatepass.student.toString() !== parent.student?.toString()) {
+            return res.status(403).json({ message: "Unauthorized to action this gatepass" });
+        }
+
+        if (gatepass.status !== "pending_parent") {
+            return res.status(400).json({ message: `Cannot action gatepass with current status: ${gatepass.status}` });
+        }
+
+        gatepass.status = status;
+        if (comments) gatepass.comments = comments;
+
+        await gatepass.save();
+
+        res.status(200).json({ message: `Gatepass ${status}`, gatepass });
+    } catch (error) {
+        console.error("Update Ward Gatepass Error:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
@@ -206,5 +243,6 @@ module.exports = {
     getWardResults,
     getWardFees,
     getWardGatepasses,
+    updateWardGatepassStatus,
     getNotifications,
 };

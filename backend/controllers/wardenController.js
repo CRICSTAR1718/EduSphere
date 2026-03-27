@@ -9,8 +9,8 @@ const User = require("../models/User");
 // @access  Private/Warden
 const getDashboardStats = async (req, res) => {
     try {
-        const pendingGatepasses = await Gatepass.countDocuments({ status: "pending" });
-        const approvedGatepasses = await Gatepass.countDocuments({ status: "approved" });
+        const pendingGatepasses = await Gatepass.countDocuments({ status: "approved_by_parent" });
+        const approvedGatepasses = await Gatepass.countDocuments({ status: "approved_by_warden" });
         const hostelGrievances = await Grievance.countDocuments({ status: "pending" });
         const totalHostelers = await User.countDocuments({ role: "student" }); // Simplification
 
@@ -35,7 +35,13 @@ const getGatepasses = async (req, res) => {
     try {
         const { status } = req.query;
         let query = {};
-        if (status) query.status = status;
+        
+        // Default to showing gatepasses approved by parents but not yet actioned by warden
+        if (status) {
+            query.status = status;
+        } else {
+            query.status = "approved_by_parent";
+        }
 
         const gatepasses = await Gatepass.find(query)
             .populate("student", "name email enrollmentNo department")
@@ -56,12 +62,16 @@ const updateGatepassStatus = async (req, res) => {
     try {
         const { status, comments } = req.body;
 
-        if (!status || !["approved", "rejected"].includes(status)) {
-            return res.status(400).json({ message: "Status must be 'approved' or 'rejected'" });
+        if (!status || !["approved_by_warden", "rejected_by_warden"].includes(status)) {
+            return res.status(400).json({ message: "Status must be 'approved_by_warden' or 'rejected_by_warden'" });
         }
 
         const gatepass = await Gatepass.findById(req.params.id);
         if (!gatepass) return res.status(404).json({ message: "Gatepass not found" });
+
+        if (gatepass.status !== "approved_by_parent") {
+            return res.status(400).json({ message: "Gatepass must be approved by parent before warden action" });
+        }
 
         gatepass.status = status;
         gatepass.warden = req.user._id;
@@ -83,7 +93,7 @@ const updateGatepassStatus = async (req, res) => {
 // @access  Private/Warden
 const getHostelLogs = async (req, res) => {
     try {
-        const logs = await Gatepass.find({ status: "approved" })
+        const logs = await Gatepass.find({ status: "approved_by_warden" })
             .populate("student", "name enrollmentNo department")
             .sort({ outDate: -1 })
             .limit(50);
