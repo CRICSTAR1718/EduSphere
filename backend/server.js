@@ -4,38 +4,52 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 
 dotenv.config();
-
 connectDB();
 
 const app = express();
 
+// ==================== MIDDLEWARE ====================
 
 // Parse JSON body
 app.use(express.json());
 
-// Enable CORS (allow frontend to call backend)
-const rawAllowedOrigins = process.env.CLIENT_URL || "http://localhost:5173,http://localhost:5174,http://localhost:5175";
+// ✅ CORS CONFIG (FIXED + PRODUCTION SAFE)
+const rawAllowedOrigins =
+    process.env.CLIENT_URL ||
+    "http://localhost:5173,http://localhost:5174,http://localhost:5175";
+
 const allowedOrigins = rawAllowedOrigins
     .split(",")
-    .map(s => s.trim().replace(/\/$/, "")) // Strip trailing slashes
+    .map((s) => s.trim().replace(/\/$/, ""))
     .filter(Boolean);
 
-app.use(
-    cors({
-        origin: function (origin, callback) {
-            // Allow requests with no origin (mobile apps, curl, etc.)
-            if (!origin) return callback(null, true);
-            
-            if (allowedOrigins.includes(origin)) {
-                return callback(null, true);
-            } else {
-                console.error(`❌ CORS Blocked: Origin "${origin}" is not in the whitelist:`, allowedOrigins);
-                return callback(new Error("Not allowed by CORS"));
-            }
-        },
-        credentials: true,
-    })
-);
+// 🔥 DEBUG (remove later if you want)
+console.log("✅ Allowed Origins:", allowedOrigins);
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // allow curl/postman
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            console.error(
+                `❌ CORS Blocked: Origin "${origin}" not allowed`,
+                allowedOrigins
+            );
+            return callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+};
+
+// Apply CORS
+app.use(cors(corsOptions));
+
+// ✅ HANDLE PREFLIGHT (VERY IMPORTANT)
+app.options("*", cors(corsOptions));
+
 
 // ==================== ROUTES ====================
 
@@ -48,35 +62,18 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-// Auth routes
+// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
-
-// Student routes
 app.use("/api/student", require("./routes/studentRoutes"));
-
-// Admin routes
 app.use("/api/admin", require("./routes/adminRoutes"));
-
-// Faculty routes
 app.use("/api/faculty", require("./routes/facultyRoutes"));
-
-// Warden routes
 app.use("/api/warden", require("./routes/wardenRoutes"));
-
-// Parent routes
 app.use("/api/parent", require("./routes/parentRoutes"));
-
-// Timetable routes
 app.use("/api/timetable", require("./routes/timetableRoutes"));
-
-// Feedback routes
 app.use("/api/feedback", require("./routes/feedbackRoutes"));
-
-// Common resources (all roles)
 app.use("/api/common", require("./routes/commonRoutes"));
-
-// Chatbot routes
 app.use("/api/chatbot", require("./routes/chatbotRoutes"));
+
 
 // ==================== ERROR HANDLING ====================
 
@@ -87,19 +84,26 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-    console.error("Unhandled error:", err.stack);
+    console.error("🔥 Unhandled error:", err.message);
+
+    // ⚠️ CORS error handling
+    if (err.message === "Not allowed by CORS") {
+        return res.status(403).json({ message: err.message });
+    }
+
     res.status(500).json({
         message: "Internal server error",
-        error: process.env.NODE_ENV === "development" ? err.message : undefined,
+        error:
+            process.env.NODE_ENV === "development" ? err.message : undefined,
     });
 });
+
 
 // ================== START SERVER ==================
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`\n🚀 EduSphere API Server running on port ${PORT}`);
-    console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`\n🚀 EduSphere API running on port ${PORT}`);
     console.log(`🌐 Environment: ${process.env.NODE_ENV || "development"}\n`);
 });
