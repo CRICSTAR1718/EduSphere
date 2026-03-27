@@ -23,9 +23,11 @@ const AdmitCardTemplate = ({ studentData }) => {
                 setData({
                     name: profile.name,
                     rollNo: profile.enrollmentNo,
-                    course: "B.Tech " + profile.department,
-                    session: "2023-24", // Assuming static or from settings in a real app
-                    examDate: schedule.exams.length > 0 
+                    email: profile.email,
+                    phone: profile.phone,
+                    course: profile.department ? "B.Tech " + profile.department : "B.Tech Student",
+                    session: "2024-25", 
+                    examDate: schedule.exams && schedule.exams.length > 0 
                         ? new Date(schedule.exams[0].date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')
                         : "TBD",
                     universityName: "EDUSPHERE UNIVERSITY",
@@ -61,7 +63,9 @@ const AdmitCardTemplate = ({ studentData }) => {
         session,
         examDate,
         universityName,
-        universityLogo
+        universityLogo,
+        email,
+        phone
     } = data;
 
     return (
@@ -117,8 +121,8 @@ const AdmitCardTemplate = ({ studentData }) => {
                         <DetailItem label="Roll Number" value={rollNo} highlight />
                         <DetailItem label="Course / Program" value={course} />
                         <DetailItem label="Date of Birth" value="12-08-2002" />
-                        <DetailItem label="Contact Number" value="+91 98765 43210" />
-                        <DetailItem label="Email Address" value="student@edusphere.edu" />
+                        <DetailItem label="Contact Number" value={phone || "Not Provided"} />
+                        <DetailItem label="Email Address" value={email} />
                     </div>
 
                     <div className="mt-8 p-4 bg-gray-50 rounded-xl border border-gray-100">

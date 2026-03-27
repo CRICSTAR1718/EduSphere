@@ -1,16 +1,13 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import StatCard from "../../components/common/StatCard";
-import StudentPerformance from "../../components/faculty/StudentPerformance";
-import MarkAttendance from "../../components/faculty/MarkAttendance";
-import UploadMarks from "../../components/faculty/UploadMarks";
-import RespondGrievance from "../../components/faculty/RespondGrievance";
 import Loader from "../../components/common/Loader";
 import ErrorMessage from "../../components/common/ErrorMessage";
-import { useEffect, useState } from "react";
-import { getFacultyDashboardStats, getLowAttendanceStudents } from "../../services/facultyService";
 import NoticeWidget from "../../components/common/NoticeWidget";
 import EventWidget from "../../components/common/EventWidget";
+import { useEffect, useState } from "react";
+import { getFacultyDashboardStats, getLowAttendanceStudents } from "../../services/facultyService";
 import { ATTENDANCE_THRESHOLD } from "../../utils/attendanceUtils";
+import { Link } from "react-router-dom";
 
 function FacultyDashboard() {
 
@@ -27,7 +24,7 @@ function FacultyDashboard() {
                     getLowAttendanceStudents()
                 ]);
                 setStats(statsData);
-                setLowAttendanceStudents(lowAttendanceData.students || []);
+                setLowAttendanceStudents(lowAttendanceData.students || lowAttendanceData || []);
             } catch (err) {
                 console.error("Dashboard error:", err);
                 setError("Failed to load faculty data");
@@ -42,7 +39,9 @@ function FacultyDashboard() {
     if (loading) {
         return (
             <DashboardLayout>
-                <Loader />
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <Loader />
+                </div>
             </DashboardLayout>
         );
     }
@@ -55,91 +54,85 @@ function FacultyDashboard() {
         );
     }
 
-    // Removed static students array and filtering logic,
-    // as backend getLowAttendanceStudents already provides filtered logic.
-
     return (
         <DashboardLayout>
-            <div className="space-y-8 animate-fadeIn">
+            <div className="space-y-8 animate-fadeIn p-2 sm:p-4">
+                
+                <h1 className="text-2xl font-bold text-slate-800">Faculty Overview</h1>
 
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <StatCard title="Total Classes" value={stats.totalClasses} />
-                    <StatCard title="Students Assigned" value={stats.students} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <StatCard title="Assigned Courses" value={stats.courses} />
+                    <StatCard title="Total Classes Taken" value={stats.totalClasses} />
+                    <StatCard title="Students Taught" value={stats.students} />
                     <StatCard title="Pending Grievances" value={stats.grievances} />
                 </div>
-                <div className="bg-white rounded-2xl shadow-md p-6">
-                    <h3 className="font-semibold mb-3">Today's Lectures</h3>
-                    <p className="text-sm text-slate-600">
-                        BTech CSE 2A – Data Structures – 10:00 AM
-                    </p>
+
+                {/* Quick Actions */}
+                <div>
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <QuickLink to="/faculty/attendance" icon="📝" label="Mark Attendance" bg="bg-emerald-50" text="text-emerald-700" />
+                        <QuickLink to="/faculty/marks" icon="📊" label="Upload Marks" bg="bg-blue-50" text="text-blue-700" />
+                        <QuickLink to="/faculty/courses" icon="📚" label="My Courses" bg="bg-indigo-50" text="text-indigo-700" />
+                        <QuickLink to="/faculty/grievances" icon="💬" label="Grievances" bg="bg-rose-50" text="text-rose-700" />
+                    </div>
                 </div>
+
+                {/* Widgets */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <NoticeWidget />
                     <EventWidget />
                 </div>
-                {/* Performance Analytics */}
-                <StudentPerformance />
 
-                {/* Attendance + Marks Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <MarkAttendance />
-                    <UploadMarks />
-                </div>
-
-                {/* Grievance Response */}
-                <RespondGrievance />
-
+                {/* Low Attendance Alert */}
                 <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-
-                    <div className="p-6 border-b flex justify-between items-center">
-                        <h3 className="font-semibold text-slate-700">
-                            Students Below {ATTENDANCE_THRESHOLD}%
+                    <div className="p-6 border-b flex justify-between items-center bg-slate-50/50">
+                        <h3 className="font-semibold text-slate-700 flex items-center gap-2">
+                            <span className="text-xl">⚠️</span> Students Below {ATTENDANCE_THRESHOLD}% Attendance
                         </h3>
-
-                        <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-medium">
-                            {lowAttendanceStudents.length} Students
-                        </span>
+                        {lowAttendanceStudents.length > 0 && (
+                            <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold">
+                                {lowAttendanceStudents.length} Students Alert
+                            </span>
+                        )}
                     </div>
 
-                    {lowAttendanceStudents.length === 0 ? (
-                        <div className="p-6 text-green-600 font-medium">
-                            ✅ All students are above attendance threshold.
+                    {!Array.isArray(lowAttendanceStudents) || lowAttendanceStudents.length === 0 ? (
+                        <div className="p-8 text-center bg-emerald-50/30">
+                            <p className="text-emerald-600 font-medium">✅ All of your students are maintaining good attendance!</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm">
-                                <thead className="bg-red-50 text-red-700">
+                                <thead className="bg-rose-50/50 text-rose-700">
                                     <tr>
-                                        <th className="p-4 text-left">Student</th>
-                                        <th className="p-4 text-left">Attendance</th>
-                                        <th className="p-4 text-left">Status</th>
+                                        <th className="p-4 text-left font-semibold">Student Name</th>
+                                        <th className="p-4 text-left font-semibold">Subject</th>
+                                        <th className="p-4 text-left font-semibold">Attendance</th>
+                                        <th className="p-4 text-left font-semibold">Status</th>
                                     </tr>
                                 </thead>
-
-                                <tbody>
-                                    {lowAttendanceStudents.map(student => (
-                                        <tr
-                                            key={student._id}
-                                            className="border-t bg-red-50 hover:bg-red-100 transition"
-                                        >
-                                            <td className="p-4 font-medium">
-                                                {student.name}
+                                <tbody className="divide-y divide-rose-50">
+                                    {lowAttendanceStudents.map((student, idx) => (
+                                        <tr key={idx} className="hover:bg-rose-50/30 transition">
+                                            <td className="p-4 font-medium text-slate-800">
+                                                {student.student?.name || "Unknown"}
                                             </td>
-
-                                            <td className="p-4 font-semibold text-red-600">
-                                                {student.attendancePercentage}%
+                                            <td className="p-4 text-slate-600">
+                                                {student.subject}
                                             </td>
-
+                                            <td className="p-4 font-bold text-rose-600">
+                                                {student.percentage}%
+                                            </td>
                                             <td className="p-4">
-                                                <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-200 text-red-700">
-                                                    Below Threshold
+                                                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-700">
+                                                    Action Required
                                                 </span>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
-
                             </table>
                         </div>
                     )}
@@ -147,6 +140,15 @@ function FacultyDashboard() {
 
             </div>
         </DashboardLayout>
+    );
+}
+
+function QuickLink({ to, icon, label, bg, text }) {
+    return (
+        <Link to={to} className={`flex flex-col items-center justify-center p-6 rounded-2xl transition hover:shadow-md hover:-translate-y-1 ${bg} ${text} border border-white hover:border-indigo-100`}>
+            <span className="text-3xl mb-3">{icon}</span>
+            <span className="font-semibold text-sm text-center">{label}</span>
+        </Link>
     );
 }
 

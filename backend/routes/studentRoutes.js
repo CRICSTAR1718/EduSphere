@@ -16,6 +16,10 @@ const {
     getFees,
     getCourses,
     getExams,
+    getAllCourses,
+    enrollCourse,
+    dropCourse,
+    getEnrolledCourses,
 } = require("../controllers/studentController");
 
 // All routes below require: logged in + student role
@@ -54,10 +58,22 @@ router.get("/gatepasses", getGatepasses);
 // GET /api/student/fees — Get fee records
 router.get("/fees", getFees);
 
-// GET /api/student/courses — Get registered courses
+// GET /api/student/courses — Get courses matching dept/semester
 router.get("/courses", getCourses);
 
 // GET /api/student/exams — Get upcoming exams
 router.get("/exams", getExams);
-// exports module
+
+// GET /api/student/all-courses — Get all courses for registration
+router.get("/all-courses", getAllCourses);
+
+// POST /api/student/enroll — Enroll in a course
+router.post("/enroll", enrollCourse);
+
+// DELETE /api/student/enroll/:courseId — Drop a course
+router.delete("/enroll/:courseId", dropCourse);
+
+// GET /api/student/enrolled — Get student's enrolled courses
+router.get("/enrolled", getEnrolledCourses);
+
 module.exports = router;

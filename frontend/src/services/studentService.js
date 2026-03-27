@@ -63,7 +63,7 @@ export const getStudentFees = async () => {
     return data;
 };
 
-// Courses
+// Courses (dept/semester match)
 export const getStudentCourses = async () => {
     const { data } = await API.get("/student/courses");
     return data;
@@ -72,5 +72,32 @@ export const getStudentCourses = async () => {
 // Exams
 export const getStudentExamSchedule = async () => {
     const { data } = await API.get("/student/exams");
+    return data;
+};
+
+// Course Registration
+export const getAllCourses = async () => {
+    const { data } = await API.get("/student/all-courses");
+    return data;
+};
+
+export const enrollCourse = async (courseId) => {
+    const { data } = await API.post("/student/enroll", { courseId });
+    return data;
+};
+
+export const dropCourse = async (courseId) => {
+    const { data } = await API.delete(`/student/enroll/${courseId}`);
+    return data;
+};
+
+export const getEnrolledCourses = async () => {
+    const { data } = await API.get("/student/enrolled");
+    return data;
+};
+
+// Timetable
+export const getStudentTimetable = async (params) => {
+    const { data } = await API.get("/timetable", { params });
     return data;
 };

@@ -8,9 +8,66 @@ import UserManagement from "../../components/admin/UserManagement";
 import Loader from "../../components/common/Loader";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import { useEffect, useState } from "react";
-import { getAdminStats } from "../../services/adminService";
+import { getAdminStats, getTimetable } from "../../services/adminService";
 import NoticeWidget from "../../components/common/NoticeWidget";
 import EventWidget from "../../components/common/EventWidget";
+
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const dayColors = {
+    Monday: "bg-blue-100 text-blue-700",
+    Tuesday: "bg-purple-100 text-purple-700",
+    Wednesday: "bg-emerald-100 text-emerald-700",
+    Thursday: "bg-amber-100 text-amber-700",
+    Friday: "bg-rose-100 text-rose-700",
+    Saturday: "bg-cyan-100 text-cyan-700",
+};
+
+function TimetableOverview() {
+    const [entries, setEntries] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getTimetable()
+            .then((data) => setEntries(Array.isArray(data) ? data : []))
+            .catch(() => setEntries([]))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const dayCounts = DAYS.map((day) => ({
+        day,
+        count: entries.filter((e) => e.day === day).length,
+    })).filter((d) => d.count > 0);
+
+    return (
+        <div className="bg-white rounded-2xl shadow-md p-6">
+            <h3 className="font-semibold mb-4 text-slate-800">Timetable Overview</h3>
+            {loading ? (
+                <div className="flex justify-center py-4">
+                    <div className="w-5 h-5 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+                </div>
+            ) : entries.length === 0 ? (
+                <p className="text-sm text-slate-400">No lectures scheduled yet.</p>
+            ) : (
+                <div className="space-y-3">
+                    <p className="text-sm text-slate-600">
+                        <span className="text-2xl font-bold text-indigo-600">{entries.length}</span>{" "}
+                        total lecture{entries.length !== 1 ? "s" : ""} scheduled
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {dayCounts.map(({ day, count }) => (
+                            <span
+                                key={day}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${dayColors[day] || "bg-slate-100 text-slate-600"}`}
+                            >
+                                {day.slice(0, 3)}: {count}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 function AdminDashboard() {
     const [stats, setStats] = useState(null);
@@ -49,12 +106,7 @@ function AdminDashboard() {
                     <StatCard title="Total Faculty" value={stats.faculty} />
                     <StatCard title="Active Notices" value={stats.notices} />
                 </div>
-                <div className="bg-white rounded-2xl shadow-md p-6">
-                    <h3 className="font-semibold mb-3">Timetable Overview</h3>
-                    <p className="text-sm text-slate-600">
-                        25 lectures scheduled this week.
-                    </p>
-                </div>
+                <TimetableOverview />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <NoticeWidget />
                     <EventWidget />

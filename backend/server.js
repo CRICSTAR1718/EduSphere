@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS (allow frontend to call backend)
-const rawAllowedOrigins = process.env.CLIENT_URL || "http://localhost:5173";
+const rawAllowedOrigins = process.env.CLIENT_URL || "http://localhost:5173,http://localhost:5174,http://localhost:5175";
 const allowedOrigins = rawAllowedOrigins
     .split(",")
     .map(s => s.trim().replace(/\/$/, "")) // Strip trailing slashes

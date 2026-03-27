@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import StatCard from "../../components/common/StatCard";
 import AttendanceChart from "../../components/student/AttendanceChart";
@@ -10,7 +10,8 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 import NoticeWidget from "../../components/common/NoticeWidget";
 import EventWidget from "../../components/common/EventWidget"; 
 import AttendanceWarningBanner from "../../components/student/AttendanceWarningBanner";
-import { getStudentDashboardStats, getStudentGrievances, submitGrievance as submitGrievanceApi } from "../../services/studentService";
+import { getStudentDashboardStats, getStudentGrievances, submitGrievance as submitGrievanceApi, getStudentTimetable } from "../../services/studentService";
+import { AuthContext } from "../../context/AuthContext";
 
 function StudentDashboard() {
     const [stats, setStats] = useState({
@@ -20,20 +21,18 @@ function StudentDashboard() {
         subjectAttendance: []
     });
     const [grievances, setGrievances] = useState([]);
+    const [todayClasses, setTodayClasses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { user } = useContext(AuthContext);
 
     const processStats = (data) => {
-        if (!data || data.overallAttendance === "0%" || !data.subjectAttendance || data.subjectAttendance.length === 0) {
+        if (!data) {
             return {
-                overallAttendance: "80%",
-                avgGPA: "8.6",
-                pendingGrievances: data?.pendingGrievances || 0,
-                subjectAttendance: [
-                    { subject: "Data Structures", percentage: 86 },
-                    { subject: "Operating System", percentage: 90 },
-                    { subject: "Introduction to AI/ML", percentage: 82 }
-                ]
+                overallAttendance: "0%",
+                avgGPA: "0.0",
+                pendingGrievances: 0,
+                subjectAttendance: []
             };
         }
         return data;
@@ -42,12 +41,23 @@ function StudentDashboard() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const [statsData, grievancesData] = await Promise.all([
+                // Ensure user context is available before making requests that depend on it
+                const [statsData, grievancesData, timetableData] = await Promise.all([
                     getStudentDashboardStats(),
-                    getStudentGrievances()
+                    getStudentGrievances(),
+                    getStudentTimetable({ department: user?.department, semester: user?.semester })
                 ]);
+                
                 setStats(processStats(statsData));
                 setGrievances(grievancesData);
+
+                // Filter for today's classes
+                const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const today = days[new Date().getDay()];
+                const todaysLectures = (timetableData || []).filter(t => t.day === today);
+                todaysLectures.sort((a, b) => a.startTime.localeCompare(b.startTime));
+                setTodayClasses(todaysLectures);
+
             } catch (err) {
                 console.error("Error fetching dashboard data:", err);
                 setError("Failed to load dashboard data. Please try again later.");
@@ -55,8 +65,10 @@ function StudentDashboard() {
                 setLoading(false);
             }
         };
-        fetchDashboardData();
-    }, []);
+        if (user) {
+            fetchDashboardData();
+        }
+    }, [user]);
 
     const handleGrievanceSubmit = async (message) => {
         try {
@@ -108,10 +120,29 @@ function StudentDashboard() {
                     <StatCard title="Pending Grievances" value={stats.pendingGrievances} />
                 </div>
                 <div className="bg-white rounded-2xl shadow-md p-6">
-                    <h3 className="font-semibold mb-3">Today's Schedule</h3>
-                    <p className="text-sm text-slate-600">
-                        Data Structures – 10:00 AM
-                    </p>
+                    <h3 className="font-semibold mb-4 text-slate-800">Today's Schedule</h3>
+                    {todayClasses.length > 0 ? (
+                        <div className="space-y-4">
+                            {todayClasses.map((lecture, index) => (
+                                <div key={index} className="flex justify-between items-center text-sm border-b pb-3 last:border-0 last:pb-0">
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-slate-800 text-base">{lecture.course?.title || "Unknown Subject"}</span>
+                                        <span className="text-slate-500 mt-1">
+                                            Room: <span className="font-medium text-slate-700">{lecture.roomContext || "TBA"}</span> | Faculty: <span className="font-medium text-slate-700">{lecture.course?.faculty?.name || "TBA"}</span>
+                                        </span>
+                                    </div>
+                                    <span className="text-indigo-700 font-bold bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg whitespace-nowrap">
+                                        {lecture.startTime} - {lecture.endTime}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-6 text-slate-400">
+                            <span className="text-3xl mb-2">🎉</span>
+                            <p className="italic">No lectures scheduled for today. Enjoy your day!</p>
+                        </div>
+                    )}
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <NoticeWidget />

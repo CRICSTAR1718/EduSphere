@@ -7,6 +7,8 @@ const Gatepass = require("../models/Gatepass");
 const Fee = require("../models/Fee");
 const Course = require("../models/Course");
 const Exam = require("../models/Exam");
+const Enrollment = require("../models/Enrollment");
+const mongoose = require("mongoose");
 
 // ==================== DASHBOARD & PROFILE ====================
 
@@ -73,11 +75,11 @@ const updateProfile = async (req, res) => {
 // @access  Private (student)
 const getAttendance = async (req, res) => {
     try {
-        const studentId = req.user.id;
+        const studentId = new mongoose.Types.ObjectId(req.user._id);
 
         // Aggregate attendance by subject
         const attendance = await Attendance.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: "$subject",
@@ -208,11 +210,11 @@ const getGrievances = async (req, res) => {
 // @access  Private (student)
 const getDashboardStats = async (req, res) => {
     try {
-        const studentId = req.user.id;
+        const studentId = new mongoose.Types.ObjectId(req.user._id);
 
         // Overall attendance percentage
         const attendanceData = await Attendance.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: null,
@@ -231,7 +233,7 @@ const getDashboardStats = async (req, res) => {
 
         // Average GPA (simplified: average marks / 10)
         const resultsData = await Result.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: null,
@@ -253,7 +255,7 @@ const getDashboardStats = async (req, res) => {
 
         // Subject-wise attendance for chart
         const subjectAttendance = await Attendance.aggregate([
-            { $match: { student: studentId._id || studentId } },
+            { $match: { student: studentId } },
             {
                 $group: {
                     _id: "$subject",
@@ -278,11 +280,18 @@ const getDashboardStats = async (req, res) => {
             { $sort: { subject: 1 } },
         ]);
 
+        // Enrolled courses count
+        const enrolledCourses = await Enrollment.countDocuments({
+            student: studentId,
+            status: "enrolled",
+        });
+
         res.status(200).json({
             overallAttendance: `${overallAttendance}%`,
             avgGPA,
             pendingGrievances,
             subjectAttendance,
+            enrolledCourses,
         });
     } catch (error) {
         console.error("Dashboard stats error:", error.message);
@@ -291,7 +300,6 @@ const getDashboardStats = async (req, res) => {
 };
 
 // ==================== GATEPASS ====================
-
 
 // @desc    Request a gatepass
 // @route   POST /api/student/gatepass
@@ -336,7 +344,6 @@ const getGatepasses = async (req, res) => {
 };
 
 // ==================== FEES ====================
-
 
 // @desc    Get student's fee records
 // @route   GET /api/student/fees
@@ -395,6 +402,141 @@ const getExams = async (req, res) => {
     }
 };
 
+// ==================== COURSE REGISTRATION ====================
+
+// @desc    Get all available courses (for browsing/registration)
+// @route   GET /api/student/all-courses
+// @access  Private/Student
+const getAllCourses = async (req, res) => {
+    try {
+        const courses = await Course.find()
+            .populate("faculty", "name email department")
+            .sort({ courseCode: 1 });
+        
+        // Get student's existing enrollments
+        const enrollments = await Enrollment.find({ 
+            student: req.user._id, 
+            status: "enrolled" 
+        }).select("course");
+        
+        const enrolledCourseIds = enrollments.map(e => e.course.toString());
+        
+        // Mark which courses the student is enrolled in
+        const coursesWithStatus = courses.map(course => ({
+            ...course.toObject(),
+            isEnrolled: enrolledCourseIds.includes(course._id.toString()),
+        }));
+        
+        res.status(200).json({ count: coursesWithStatus.length, courses: coursesWithStatus });
+    } catch (error) {
+        console.error("Get All Courses Error:", error);
+        res.status(500).json({ message: "Server error while fetching courses" });
+    }
+};
+
+// @desc    Enroll in a course
+// @route   POST /api/student/enroll
+// @access  Private/Student
+const enrollCourse = async (req, res) => {
+    try {
+        const { courseId } = req.body;
+        
+        if (!courseId) {
+            return res.status(400).json({ message: "Course ID is required" });
+        }
+        
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ message: "Course not found" });
+        }
+        
+        // Check if already enrolled
+        const existing = await Enrollment.findOne({ 
+            student: req.user._id, 
+            course: courseId, 
+            status: "enrolled" 
+        });
+        
+        if (existing) {
+            return res.status(400).json({ message: "Already enrolled in this course" });
+        }
+        
+        // Check if previously dropped — reactivate
+        const dropped = await Enrollment.findOne({ 
+            student: req.user._id, 
+            course: courseId, 
+            status: "dropped" 
+        });
+        
+        if (dropped) {
+            dropped.status = "enrolled";
+            await dropped.save();
+            return res.status(200).json({ message: "Re-enrolled successfully", enrollment: dropped });
+        }
+        
+        const enrollment = await Enrollment.create({
+            student: req.user._id,
+            course: courseId,
+        });
+        
+        res.status(201).json({ message: "Enrolled successfully", enrollment });
+    } catch (error) {
+        console.error("Enroll Course Error:", error);
+        res.status(500).json({ message: "Server error while enrolling" });
+    }
+};
+
+// @desc    Drop a course (unenroll)
+// @route   DELETE /api/student/enroll/:courseId
+// @access  Private/Student
+const dropCourse = async (req, res) => {
+    try {
+        const enrollment = await Enrollment.findOne({
+            student: req.user._id,
+            course: req.params.courseId,
+            status: "enrolled",
+        });
+        
+        if (!enrollment) {
+            return res.status(404).json({ message: "Enrollment not found" });
+        }
+        
+        enrollment.status = "dropped";
+        await enrollment.save();
+        
+        res.status(200).json({ message: "Course dropped successfully" });
+    } catch (error) {
+        console.error("Drop Course Error:", error);
+        res.status(500).json({ message: "Server error while dropping course" });
+    }
+};
+
+// @desc    Get student's enrolled courses
+// @route   GET /api/student/enrolled
+// @access  Private/Student
+const getEnrolledCourses = async (req, res) => {
+    try {
+        const enrollments = await Enrollment.find({ 
+            student: req.user._id, 
+            status: "enrolled" 
+        })
+        .populate({
+            path: "course",
+            populate: { path: "faculty", select: "name email" }
+        })
+        .sort({ createdAt: -1 });
+        
+        const courses = enrollments
+            .filter(e => e.course)
+            .map(e => e.course);
+        
+        res.status(200).json({ count: courses.length, courses });
+    } catch (error) {
+        console.error("Get Enrolled Courses Error:", error);
+        res.status(500).json({ message: "Server error while fetching enrolled courses" });
+    }
+};
+
 module.exports = {
     getProfile,
     updateProfile,
@@ -408,5 +550,9 @@ module.exports = {
     getGatepasses,
     getFees,
     getCourses,
-    getExams
+    getExams,
+    getAllCourses,
+    enrollCourse,
+    dropCourse,
+    getEnrolledCourses,
 };

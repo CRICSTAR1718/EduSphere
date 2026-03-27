@@ -8,10 +8,12 @@ const registerUser = async (req, res) => {
     try {
         const { name, email, password, role, phone, department, semester, enrollmentNo } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const userRole = role || "student";
+
+        // Check if user already exists with SAME email AND role
+        const existingUser = await User.findOne({ email, role: userRole });
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists with this email" });
+            return res.status(400).json({ message: "User already exists with this email and role" });
         }
 
         // Create user
@@ -19,7 +21,7 @@ const registerUser = async (req, res) => {
             name,
             email,
             password,
-            role: role || "student",
+            role: userRole,
             phone: phone || "",
             department: department || "",
             semester: semester || null,
@@ -54,17 +56,20 @@ const registerUser = async (req, res) => {
 // @access  Public
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
         // Validate input
         if (!email || !password) {
             return res.status(400).json({ message: "Email and password are required" });
         }
 
-        // Find user by email
-        const user = await User.findOne({ email });
+        // Find user by email AND role
+        const query = { email };
+        if (role) query.role = role;
+
+        const user = await User.findOne(query);
         if (!user) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email, password or role" });
         }
 
         // Check if account is active

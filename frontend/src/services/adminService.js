@@ -123,3 +123,24 @@ export const getAttendanceReports = async () => {
     const { data } = await API.get("/admin/reports/attendance");
     return data;
 };
+
+// Timetable
+export const getTimetable = async (params) => {
+    const { data } = await API.get("/timetable", { params });
+    return data;
+};
+
+export const addTimetableEntry = async (entryData) => {
+    const { data } = await API.post("/timetable", entryData);
+    return data;
+};
+
+export const updateTimetableEntry = async (id, entryData) => {
+    const { data } = await API.put(`/timetable/${id}`, entryData);
+    return data;
+};
+
+export const deleteTimetableEntry = async (id) => {
+    const { data } = await API.delete(`/timetable/${id}`);
+    return data;
+};
