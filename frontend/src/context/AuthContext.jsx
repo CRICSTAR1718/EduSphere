@@ -1,9 +1,11 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { setToken, getToken, removeToken } from "../utils/tokenHandler";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 export const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
