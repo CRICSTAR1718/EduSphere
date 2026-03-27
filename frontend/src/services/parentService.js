@@ -27,6 +27,11 @@ export const getWardGatepasses = async (wardId) => {
     return data;
 };
 
+export const updateWardGatepassStatus = async (id, updateData) => {
+    const { data } = await API.put(`/parent/gatepasses/${id}`, updateData);
+    return data;
+};
+
 // Notifications
 export const getNotifications = async () => {
     const { data } = await API.get("/parent/notifications");

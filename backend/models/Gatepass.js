@@ -26,8 +26,14 @@ const gatepassSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["pending", "approved", "rejected"],
-            default: "pending",
+            enum: [
+                "pending_parent",
+                "approved_by_parent",
+                "rejected_by_parent",
+                "approved_by_warden",
+                "rejected_by_warden",
+            ],
+            default: "pending_parent",
         },
         warden: {
             type: mongoose.Schema.Types.ObjectId,
