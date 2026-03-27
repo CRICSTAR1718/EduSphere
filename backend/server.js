@@ -75,6 +75,9 @@ app.use("/api/feedback", require("./routes/feedbackRoutes"));
 // Common resources (all roles)
 app.use("/api/common", require("./routes/commonRoutes"));
 
+// Chatbot routes
+app.use("/api/chatbot", require("./routes/chatbotRoutes"));
+
 // ==================== ERROR HANDLING ====================
 
 // 404 handler
