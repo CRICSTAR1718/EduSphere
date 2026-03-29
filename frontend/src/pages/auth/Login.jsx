@@ -1,6 +1,6 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import doodle from "../../assets/images/doodle2.jpg";
+import campus from "../../assets/images/campus.jpg";
 
 function Login() {
     const { login } = useContext(AuthContext);
@@ -17,85 +17,91 @@ function Login() {
         setError("");
 
         const result = await login({ email, password, role });
-        
+
         if (!result.success) {
             setError(result.message);
         }
+
         setIsSubmitting(false);
     };
 
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-600"></div>
-            
-            <div
-                className="absolute inset-0 bg-center bg-repeat opacity-20"
-                style={{ backgroundImage: `url(${doodle})` }}
-            ></div>
-            <div className="absolute inset-0 bg-indigo-900 opacity-40"></div>
 
-            <div className="relative z-10 bg-white/90 backdrop-blur-xl shadow-2xl rounded-3xl p-10 w-full max-w-md animate-fadeIn">
-                <h2 className="text-3xl font-bold text-center text-slate-800 mb-8">
+            {/* Background */}
+            <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${campus})` }}
+            />
+
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-indigo-900/40 backdrop-blur-sm" />
+
+            {/* Glow */}
+            <div className="absolute w-[300px] h-[300px] bg-indigo-500/30 blur-3xl rounded-full top-10 left-10" />
+
+            {/* Card */}
+            <div className="relative z-10 w-full max-w-md p-10 rounded-3xl 
+                bg-white/20 backdrop-blur-xl border border-white/30 
+                shadow-2xl shadow-indigo-500/20">
+
+                <h2 className="text-3xl font-bold text-center text-white mb-8">
                     EduSphere
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100 text-center">
+                        <div className="bg-red-500/20 text-red-200 p-3 rounded-lg text-sm border border-red-400/30 text-center">
                             {error}
                         </div>
                     )}
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">
-                            Login As
-                        </label>
-                        <select
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all bg-white"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                        >
-                            <option value="student">Student</option>
-                            <option value="faculty">Faculty</option>
-                            <option value="admin">Admin</option>
-                            <option value="warden">Warden</option>
-                            <option value="parent">Parent</option>
-                        </select>
-                    </div>
 
+                    {/* Dropdown */}
+                    <RoleDropdown role={role} setRole={setRole} />
+
+                    {/* Email */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">
+                        <label className="block text-xs text-gray-200 mb-1 uppercase">
                             Email
                         </label>
                         <input
                             type="email"
-                            placeholder="any@email.com"
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                            className="w-full px-4 py-3 rounded-xl 
+                            bg-white/30 border border-white/30 
+                            text-white placeholder-gray-200
+                            focus:outline-none focus:ring-2 focus:ring-indigo-400"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
 
+                    {/* Password */}
                     <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">
+                        <label className="block text-xs text-gray-200 mb-1 uppercase">
                             Password
                         </label>
                         <input
                             type="password"
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                            className="w-full px-4 py-3 rounded-xl 
+                            bg-white/30 border border-white/30 
+                            text-white placeholder-gray-200
+                            focus:outline-none focus:ring-2 focus:ring-indigo-400"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
 
+                    {/* Button */}
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className={`w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition duration-300 shadow-lg hover:shadow-indigo-500/30 transform active:scale-95 ${
-                            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                        className={`w-full py-4 rounded-xl font-bold text-white 
+                        bg-gradient-to-r from-indigo-600 to-violet-600 
+                        transition-all duration-300 hover:scale-105
+                        ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                         {isSubmitting ? "Authenticating..." : "Login to EduSphere"}
                     </button>
@@ -106,3 +112,67 @@ function Login() {
 }
 
 export default Login;
+
+
+// 🔽 Dropdown (inside same file → NO import issues)
+
+function RoleDropdown({ role, setRole }) {
+    const roles = [
+        { label: "Student", value: "student" },
+        { label: "Faculty", value: "faculty" },
+        { label: "Admin", value: "admin" },
+        { label: "Warden", value: "warden" },
+        { label: "Parent", value: "parent" },
+    ];
+
+    const [open, setOpen] = useState(false);
+    const ref = useRef();
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const selected = roles.find((r) => r.value === role);
+
+    return (
+        <div ref={ref}>
+            <label className="block text-xs text-gray-200 mb-1 uppercase">
+                Login As
+            </label>
+
+            <button
+                type="button"
+                onClick={() => setOpen(!open)}
+                className="w-full px-4 py-3 rounded-xl 
+                bg-white/30 border border-white/30 text-white 
+                flex justify-between items-center"
+            >
+                {selected?.label}
+                <span>{open ? "▲" : "▼"}</span>
+            </button>
+
+            {open && (
+                <div className="mt-2 rounded-xl bg-white/20 backdrop-blur-xl border border-white/20 overflow-hidden">
+                    {roles.map((r) => (
+                        <div
+                            key={r.value}
+                            onClick={() => {
+                                setRole(r.value);
+                                setOpen(false);
+                            }}
+                            className="px-4 py-3 text-white cursor-pointer hover:bg-indigo-500/30"
+                        >
+                            {r.label}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
