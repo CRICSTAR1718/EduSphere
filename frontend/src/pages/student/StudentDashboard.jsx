@@ -1,6 +1,9 @@
 import { useEffect, useState, useContext } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import WelcomeBanner from "../../components/common/WelcomeBanner";
+import studentHero from "../../assets/images/student_hero.png";
 import StatCard from "../../components/common/StatCard";
+import { ClockIcon, AcademicCapIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import AttendanceChart from "../../components/student/AttendanceChart";
 import AttendanceTable from "../../components/student/AttendanceTable";
 import GrievanceForm from "../../components/student/GrievanceForm";
@@ -111,13 +114,18 @@ function StudentDashboard() {
     return (
         <DashboardLayout>
             <div className="p-4 sm:p-8 space-y-8 animate-fadeIn">
+                <WelcomeBanner 
+                    role="Student" 
+                    imageSrc={studentHero} 
+                />
+                
                 <AttendanceWarningBanner average={numericAverage} />
                 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <StatCard title="Overall Attendance" value={stats.overallAttendance} />
-                    <StatCard title="Current GPA" value={stats.avgGPA} />
-                    <StatCard title="Pending Grievances" value={stats.pendingGrievances} />
+                    <StatCard title="Overall Attendance" value={stats.overallAttendance} icon={<ClockIcon className="w-6 h-6 stroke-2" />} accentColor="indigo" />
+                    <StatCard title="Current GPA" value={stats.avgGPA} icon={<AcademicCapIcon className="w-6 h-6 stroke-2" />} accentColor="violet" />
+                    <StatCard title="Pending Grievances" value={stats.pendingGrievances} icon={<ExclamationTriangleIcon className="w-6 h-6 stroke-2" />} accentColor="rose" />
                 </div>
                 <div className="bg-white rounded-2xl shadow-md p-6">
                     <h3 className="font-semibold mb-4 text-slate-800">Today's Schedule</h3>

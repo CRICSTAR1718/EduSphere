@@ -1,19 +1,30 @@
 import { NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
 function Sidebar({ closeSidebar }) {
 
     const { user } = useContext(AuthContext);
 
     return (
-        <div className="w-64 h-screen bg-indigo-950 text-white fixed flex flex-col">
-            <div className="p-6 text-2xl font-bold border-b border-indigo-800">
-                EduSphere
+        <div className="w-64 h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 text-gray-300 fixed flex flex-col border-r border-slate-800 shadow-[4px_0_24px_rgb(0,0,0,0.2)] z-50 transition-transform duration-300">
+            <div className="h-16 flex items-center px-6 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white font-bold text-sm">
+                        E
+                    </div>
+                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 tracking-tight">
+                        EduSphere
+                    </span>
+                </div>
             </div>
 
+            <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
 
-            <div className="flex-1 p-6 space-y-2 text-sm overflow-y-auto">
+                <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    Main Menu
+                </div>
 
                 {/* ================= STUDENT ================= */}
                 {user?.role === "student" && (
@@ -37,7 +48,6 @@ function Sidebar({ closeSidebar }) {
                         <SidebarItem to="/student/admit-card" label="My Admit Card" />
                         <SidebarItem to="/notices" label="Notice Board" />
                         <SidebarItem to="/events" label="Events" />
-
                     </>
                 )}
 
@@ -54,7 +64,6 @@ function Sidebar({ closeSidebar }) {
                         <SidebarItem to="/faculty/grievances" label="Grievances" />
                         <SidebarItem to="/notices" label="Notice Board" />
                         <SidebarItem to="/events" label="Events" />
-
                     </>
                 )}
 
@@ -111,13 +120,21 @@ function SidebarItem({ to, label }) {
         <NavLink
             to={to}
             className={({ isActive }) =>
-                `block px-4 py-2 rounded-lg transition ${isActive
-                    ? "bg-indigo-700 text-white"
-                    : "hover:bg-indigo-800 text-indigo-200"
+                `group flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 ${isActive
+                    ? "bg-indigo-600 text-white font-semibold shadow-md shadow-indigo-500/20"
+                    : "hover:bg-slate-800 text-gray-300 font-medium hover:text-white"
                 }`
             }
         >
-            {label}
+            {({ isActive }) => (
+                <>
+                    <div className="flex items-center gap-3">
+                        <div className={`w-1.5 h-1.5 rounded-full transition-all ${isActive ? 'bg-white scale-100' : 'bg-slate-500 scale-0 group-hover:scale-100'}`}></div>
+                        <span className="text-[14px]">{label}</span>
+                    </div>
+                    {isActive && <ChevronRightIcon className="w-4 h-4 text-white" />}
+                </>
+            )}
         </NavLink>
     );
 }

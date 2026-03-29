@@ -1,5 +1,8 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import WelcomeBanner from "../../components/common/WelcomeBanner";
+import adminHero from "../../assets/images/admin_hero.png";
 import StatCard from "../../components/common/StatCard";
+import { UsersIcon, AcademicCapIcon, BellAlertIcon } from "@heroicons/react/24/outline";
 import ReportsAnalytics from "../../components/admin/ReportsAnalytics";
 import AcademicCalendar from "../../components/admin/AcademicCalendar";
 import NoticeManagement from "../../components/admin/NoticeManagement";
@@ -98,13 +101,17 @@ function AdminDashboard() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-8 animate-fadeIn">
+            <div className="p-4 sm:p-8 space-y-8 animate-fadeIn">
+                <WelcomeBanner 
+                    role="Administrator" 
+                    imageSrc={adminHero} 
+                />
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <StatCard title="Total Students" value={stats.students} />
-                    <StatCard title="Total Faculty" value={stats.faculty} />
-                    <StatCard title="Active Notices" value={stats.notices} />
+                    <StatCard title="Total Students" value={stats.students} icon={<UsersIcon className="w-6 h-6 stroke-2" />} accentColor="indigo" />
+                    <StatCard title="Total Faculty" value={stats.faculty} icon={<AcademicCapIcon className="w-6 h-6 stroke-2" />} accentColor="violet" />
+                    <StatCard title="Active Notices" value={stats.notices} icon={<BellAlertIcon className="w-6 h-6 stroke-2" />} accentColor="amber" />
                 </div>
                 <TimetableOverview />
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
