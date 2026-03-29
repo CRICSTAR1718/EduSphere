@@ -4,7 +4,96 @@
 
 @layer base {
   body {
-    @apply font-sans antialiased text-slate-800 bg-indigo-50;
+    @apply font-sans antialiased text-slate-800 bg-indigo-50 dark:bg-slate-950 dark:text-slate-200 transition-colors duration-300;
+  }
+  
+  /* Enforce white text for all headings universally in dark mode */
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: #f8fafc !important;
+  }
+}
+
+/* Global Dark Mode Translation Layer */
+@layer utilities {
+  .dark .bg-white,
+  .dark .bg-\[\#ffffff\] {
+    background-color: #1e293b !important; /* slate-800 */
+  }
+  .dark .bg-slate-50,
+  .dark .bg-gray-50 {
+    background-color: #0f172a !important; /* slate-950 */
+  }
+  .dark .bg-slate-100,
+  .dark .bg-gray-100 {
+    background-color: #334155 !important; /* slate-700 */
+  }
+  .dark .bg-gray-200,
+  .dark .bg-slate-200 {
+    background-color: #475569 !important; /* slate-600 */
+  }
+  
+  .dark .text-slate-800,
+  .dark .text-slate-700,
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700 {
+    color: #f1f5f9 !important; /* slate-100 */
+  }
+  .dark .text-slate-600,
+  .dark .text-gray-600 {
+    color: #cbd5e1 !important; /* slate-300 */
+  }
+  .dark .text-slate-500,
+  .dark .text-gray-500 {
+    color: #94a3b8 !important; /* slate-400 */
+  }
+  .dark .text-slate-400,
+  .dark .text-gray-400 {
+    color: #64748b !important; /* slate-500 */
+  }
+
+  .dark .text-indigo-900 {
+    color: #a5b4fc !important; /* indigo-300 */
+  }
+  .dark .text-indigo-800 {
+    color: #e0e7ff !important; /* indigo-100 */
+  }
+  .dark .text-indigo-700 {
+    color: #818cf8 !important; /* indigo-400 */
+  }
+  
+  .dark .border-slate-200,
+  .dark .border-slate-100,
+  .dark .border-gray-200,
+  .dark .border-gray-100 {
+    border-color: #334155 !important; /* slate-700 */
+  }
+
+  .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+  .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+  .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+  .dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #334155 !important; /* break divide lines to slate-700 */
+  }
+}
+
+/* Base form inputs for dark mode compatibility */
+@layer base {
+  .dark input,
+  .dark textarea,
+  .dark select {
+    background-color: #0f172a !important; /* bg-slate-950 */
+    border-color: #334155 !important; /* border-slate-700 */
+    color: #f8fafc !important; /* text-slate-50 */
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #64748b !important; /* text-slate-500 */
   }
 }
 

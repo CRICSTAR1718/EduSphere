@@ -1,4 +1,6 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import WelcomeBanner from "../../components/common/WelcomeBanner";
+
 import StatCard from "../../components/common/StatCard";
 import Loader from "../../components/common/Loader";
 import ErrorMessage from "../../components/common/ErrorMessage";
@@ -58,7 +60,7 @@ function FacultyDashboard() {
         <DashboardLayout>
             <div className="space-y-8 animate-fadeIn p-2 sm:p-4">
                 
-                <h1 className="text-2xl font-bold text-slate-800">Faculty Overview</h1>
+                <WelcomeBanner role="Faculty" />
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -72,10 +74,10 @@ function FacultyDashboard() {
                 <div>
                     <h3 className="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <QuickLink to="/faculty/attendance" icon="📝" label="Mark Attendance" bg="bg-emerald-50" text="text-emerald-700" />
-                        <QuickLink to="/faculty/marks" icon="📊" label="Upload Marks" bg="bg-blue-50" text="text-blue-700" />
-                        <QuickLink to="/faculty/courses" icon="📚" label="My Courses" bg="bg-indigo-50" text="text-indigo-700" />
-                        <QuickLink to="/faculty/grievances" icon="💬" label="Grievances" bg="bg-rose-50" text="text-rose-700" />
+                        <QuickLink to="/faculty/attendance" icon="📝" label="Mark Attendance" theme="emerald" />
+                        <QuickLink to="/faculty/marks" icon="📊" label="Upload Marks" theme="blue" />
+                        <QuickLink to="/faculty/courses" icon="📚" label="My Courses" theme="indigo" />
+                        <QuickLink to="/faculty/grievances" icon="💬" label="Grievances" theme="rose" />
                     </div>
                 </div>
 
@@ -86,9 +88,9 @@ function FacultyDashboard() {
                 </div>
 
                 {/* Low Attendance Alert */}
-                <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-                    <div className="p-6 border-b flex justify-between items-center bg-slate-50/50">
-                        <h3 className="font-semibold text-slate-700 flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="p-6 border-b dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+                        <h3 className="font-semibold text-slate-700 dark:text-slate-100 flex items-center gap-2">
                             <span className="text-xl">⚠️</span> Students Below {ATTENDANCE_THRESHOLD}% Attendance
                         </h3>
                         {lowAttendanceStudents.length > 0 && (
@@ -143,11 +145,21 @@ function FacultyDashboard() {
     );
 }
 
-function QuickLink({ to, icon, label, bg, text }) {
+function QuickLink({ to, icon, label, theme }) {
+    const themes = {
+        emerald: "bg-gradient-to-br from-emerald-50 to-emerald-100/80 dark:from-emerald-900/40 dark:to-emerald-900/20 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/50 shadow-sm shadow-emerald-500/10 hover:shadow-md hover:shadow-emerald-500/20 hover:border-emerald-300 dark:hover:border-emerald-600",
+        blue: "bg-gradient-to-br from-blue-50 to-blue-100/80 dark:from-blue-900/40 dark:to-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/50 shadow-sm shadow-blue-500/10 hover:shadow-md hover:shadow-blue-500/20 hover:border-blue-300 dark:hover:border-blue-600",
+        indigo: "bg-gradient-to-br from-indigo-50 to-indigo-100/80 dark:from-indigo-900/40 dark:to-indigo-900/20 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/50 shadow-sm shadow-indigo-500/10 hover:shadow-md hover:shadow-indigo-500/20 hover:border-indigo-300 dark:hover:border-indigo-600",
+        rose: "bg-gradient-to-br from-rose-50 to-rose-100/80 dark:from-rose-900/40 dark:to-rose-900/20 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/50 shadow-sm shadow-rose-500/10 hover:shadow-md hover:shadow-rose-500/20 hover:border-rose-300 dark:hover:border-rose-600",
+    };
+    const activeTheme = themes[theme] || themes.indigo;
+
     return (
-        <Link to={to} className={`flex flex-col items-center justify-center p-6 rounded-2xl transition hover:shadow-md hover:-translate-y-1 ${bg} ${text} border border-white hover:border-indigo-100`}>
-            <span className="text-3xl mb-3">{icon}</span>
-            <span className="font-semibold text-sm text-center">{label}</span>
+        <Link to={to} className={`group flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 border ${activeTheme}`}>
+            <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-white/50 dark:border-slate-700/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <span className="text-3xl drop-shadow-sm">{icon}</span>
+            </div>
+            <span className="font-bold text-sm text-center">{label}</span>
         </Link>
     );
 }

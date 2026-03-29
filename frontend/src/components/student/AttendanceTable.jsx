@@ -2,16 +2,16 @@ import { ATTENDANCE_THRESHOLD } from "../../utils/attendanceUtils";
 
 function AttendanceTable({ attendance }) {
     return (
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-            <div className="p-6 border-b">
-                <h2 className="text-xl font-semibold text-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="p-6 border-b dark:border-slate-700">
+                <h2 className="text-xl font-semibold text-slate-700 dark:text-white">
                     Attendance Record
                 </h2>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
-                    <thead className="bg-indigo-50 text-indigo-700">
+                    <thead className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
                         <tr>
                             <th className="p-4 text-left">Subject</th>
                             <th className="p-4 text-left">Percentage</th>
@@ -26,10 +26,10 @@ function AttendanceTable({ attendance }) {
                             return (
                                 <tr
                                     key={index}
-                                    className={`border-t ${isLow ? "bg-red-50" : ""
+                                    className={`border-t dark:border-slate-700 ${isLow ? "bg-red-50 dark:bg-red-900/20" : ""
                                         }`}
                                 >
-                                    <td className="p-4">
+                                    <td className="p-4 dark:text-slate-200">
                                         {item.subject}
                                     </td>
 

@@ -1,6 +1,6 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import WelcomeBanner from "../../components/common/WelcomeBanner";
-import adminHero from "../../assets/images/admin_hero.png";
+
 import StatCard from "../../components/common/StatCard";
 import { UsersIcon, AcademicCapIcon, BellAlertIcon } from "@heroicons/react/24/outline";
 import ReportsAnalytics from "../../components/admin/ReportsAnalytics";
@@ -42,8 +42,8 @@ function TimetableOverview() {
     })).filter((d) => d.count > 0);
 
     return (
-        <div className="bg-white rounded-2xl shadow-md p-6">
-            <h3 className="font-semibold mb-4 text-slate-800">Timetable Overview</h3>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+            <h3 className="font-semibold mb-4 text-slate-800 dark:text-white">Timetable Overview</h3>
             {loading ? (
                 <div className="flex justify-center py-4">
                     <div className="w-5 h-5 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
@@ -102,10 +102,7 @@ function AdminDashboard() {
     return (
         <DashboardLayout>
             <div className="p-4 sm:p-8 space-y-8 animate-fadeIn">
-                <WelcomeBanner 
-                    role="Administrator" 
-                    imageSrc={adminHero} 
-                />
+                <WelcomeBanner role="Administrator" />
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

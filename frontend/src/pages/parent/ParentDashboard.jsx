@@ -1,4 +1,6 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import WelcomeBanner from "../../components/common/WelcomeBanner";
+
 import StatCard from "../../components/common/StatCard";
 import { useState } from "react";
 import NoticeWidget from "../../components/common/NoticeWidget";
@@ -11,7 +13,8 @@ function ParentDashboard() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-8 animate-fadeIn">
+            <div className="space-y-8 animate-fadeIn p-4 sm:p-8">
+                <WelcomeBanner role="Parent" />
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -24,8 +27,8 @@ function ParentDashboard() {
                     <EventWidget />
                 </div>
                 {/* Gatepass Summary Section */}
-                <div className="bg-white rounded-xl shadow-md p-6">
-                    <h2 className="text-lg font-semibold mb-4">
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                    <h2 className="text-lg font-semibold mb-4 dark:text-white">
                         Recent Gatepass Requests
                     </h2>
 

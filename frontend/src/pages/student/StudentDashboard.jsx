@@ -127,8 +127,8 @@ function StudentDashboard() {
                     <StatCard title="Current GPA" value={stats.avgGPA} icon={<AcademicCapIcon className="w-6 h-6 stroke-2" />} accentColor="violet" />
                     <StatCard title="Pending Grievances" value={stats.pendingGrievances} icon={<ExclamationTriangleIcon className="w-6 h-6 stroke-2" />} accentColor="rose" />
                 </div>
-                <div className="bg-white rounded-2xl shadow-md p-6">
-                    <h3 className="font-semibold mb-4 text-slate-800">Today's Schedule</h3>
+                <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                    <h3 className="font-semibold mb-4 text-slate-800 dark:text-white">Today's Schedule</h3>
                     {todayClasses.length > 0 ? (
                         <div className="space-y-4">
                             {todayClasses.map((lecture, index) => (
@@ -161,7 +161,7 @@ function StudentDashboard() {
 
                 {/* Attendance Visualization */}
                 <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-slate-800">Attendance Analysis</h3>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-white">Attendance Analysis</h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <AttendanceChart attendance={stats.subjectAttendance} />
                         <AttendanceTable attendance={stats.subjectAttendance} />

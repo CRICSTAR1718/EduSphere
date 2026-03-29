@@ -2,8 +2,8 @@ import BarChart from "../charts/BarChart";
 
 function AttendanceChart({ attendance }) {
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-md">
-            <h3 className="text-lg font-semibold text-slate-700 mb-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-white mb-4">
                 Attendance Overview
             </h3>
 

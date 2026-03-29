@@ -1,20 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 import Chatbot from "../common/Chatbot";
 
 function DashboardLayout({ children }) {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(() => {
+        if (typeof window !== "undefined") {
+            if (window.innerWidth < 1024) return false;
+            const saved = localStorage.getItem("sidebarOpen");
+            return saved === "true";
+        }
+        return false;
+    });
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+            localStorage.setItem("sidebarOpen", open);
+        }
+    }, [open]);
 
     return (
-        <div className="flex min-h-screen bg-indigo-50">
+        <div className="flex min-h-screen bg-gradient-to-b from-indigo-50/80 to-slate-100 dark:from-slate-900 dark:to-slate-950 transition-colors duration-300">
 
             {/* Sidebar */}
             <div
                 className={`fixed inset-y-0 left-0 z-40 w-64 transform 
         ${open ? "translate-x-0" : "-translate-x-full"} 
-        transition-transform duration-300 ease-in-out
-        lg:translate-x-0`}
+        transition-transform duration-300 ease-in-out`}
             >
                 <Sidebar closeSidebar={() => setOpen(false)} />
             </div>
@@ -22,13 +34,13 @@ function DashboardLayout({ children }) {
             {/* Overlay (Mobile Only) */}
             {open && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-40 lg:hidden"
+                    className="fixed inset-0 bg-black bg-opacity-40 z-30 lg:hidden transition-opacity duration-300"
                     onClick={() => setOpen(false)}
                 />
             )}
 
             {/* Main Content */}
-            <div className="flex-1 lg:ml-64">
+            <div className={`flex-1 transition-all duration-300 ease-in-out ${open ? "lg:ml-64" : "ml-0"}`}>
                 <Navbar toggleSidebar={() => setOpen(!open)} />
                 <div className="p-4 sm:p-6 lg:p-8">
                     {children}

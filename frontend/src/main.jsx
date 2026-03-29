@@ -8,6 +8,7 @@ import { EventProvider } from "./context/EventContext";
 import { TimetableProvider } from "./context/TimetableContext";
 import { CourseProvider } from "./context/CourseContext";
 import { FeedbackProvider } from "./context/FeedbackContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import "./styles/global.css";
 
 const rootElement = document.getElementById("root");
@@ -20,7 +21,9 @@ if (rootElement) {
             <TimetableProvider>
               <CourseProvider>
                 <FeedbackProvider>
-                  <App />
+                  <ThemeProvider>
+                    <App />
+                  </ThemeProvider>
                 </FeedbackProvider>
               </CourseProvider>
             </TimetableProvider>

@@ -26,7 +26,7 @@ function FacultyCourses() {
     return (
         <DashboardLayout>
             <div className="space-y-8 animate-fadeIn">
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-xl font-semibold dark:text-white">
                     My Assigned Courses
                 </h2>
 
@@ -39,16 +39,16 @@ function FacultyCourses() {
                         {error}
                     </div>
                 ) : courses.length === 0 ? (
-                    <div className="bg-white rounded-2xl shadow-md p-6 text-slate-500 text-center py-10">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md p-6 text-slate-500 dark:text-slate-400 text-center py-10 border border-slate-200 dark:border-slate-700">
                         You have no assigned courses.
                     </div>
                 ) : (
-                    <div className="bg-white rounded-2xl shadow-md p-6 divide-y divide-slate-100 border border-slate-100">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md p-6 divide-y divide-slate-100 dark:divide-slate-700 border border-slate-100 dark:border-slate-700">
                         {courses.map(course => (
                             <div key={course._id} className="py-4 first:pt-2 last:pb-2">
-                                <p className="font-semibold text-lg text-slate-800">{course.title}</p>
-                                <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-                                    <span className="font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                                <p className="font-semibold text-lg text-slate-800 dark:text-white">{course.title}</p>
+                                <div className="flex items-center gap-3 mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                    <span className="font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 px-2 py-0.5 rounded-md">
                                         {course.courseCode}
                                     </span>
                                     <span>•</span>

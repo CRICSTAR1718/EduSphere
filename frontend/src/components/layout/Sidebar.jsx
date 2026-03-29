@@ -8,7 +8,7 @@ function Sidebar({ closeSidebar }) {
     const { user } = useContext(AuthContext);
 
     return (
-        <div className="w-64 h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 text-gray-300 fixed flex flex-col border-r border-slate-800 shadow-[4px_0_24px_rgb(0,0,0,0.2)] z-50 transition-transform duration-300">
+        <div className="w-full h-full bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 text-gray-300 flex flex-col border-r border-slate-800 shadow-[4px_0_24px_rgb(0,0,0,0.2)] relative">
             <div className="h-16 flex items-center px-6 border-b border-slate-800">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20 text-white font-bold text-sm">
