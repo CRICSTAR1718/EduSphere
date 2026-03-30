@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, []);
 
+    
     // Login function — calls real API
     const login = async (credentials) => {
         try {
