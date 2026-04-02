@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import campus from "../../assets/images/campus.jpg";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 function Login() {
     const { login } = useContext(AuthContext);
@@ -10,6 +11,7 @@ function Login() {
     const [role, setRole] = useState("student");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -82,16 +84,29 @@ function Login() {
                         <label className="block text-xs text-gray-200 mb-1 uppercase">
                             Password
                         </label>
-                        <input
-                            type="password"
-                            className="w-full px-4 py-3 rounded-xl 
-                            bg-white/30 border border-white/30 
-                            text-white placeholder-gray-200
-                            focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                className="w-full px-4 py-3 rounded-xl 
+                                bg-white/30 border border-white/30 
+                                text-white placeholder-gray-200
+                                focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-200 hover:text-white transition-colors"
+                            >
+                                {showPassword ? (
+                                    <EyeSlashIcon className="w-5 h-5" />
+                                ) : (
+                                    <EyeIcon className="w-5 h-5" />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Button */}
