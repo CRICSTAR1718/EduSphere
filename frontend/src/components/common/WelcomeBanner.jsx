@@ -5,8 +5,8 @@ function WelcomeBanner({ role, title, subtitle, imageSrc }) {
     const { user } = useContext(AuthContext);
     
     // Fallback if somehow user is not loaded
-    const username = user?.email ? user.email.split('@')[0] : 'User';
-    const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+    const displayName = user?.name ? user.name.toUpperCase() : (user?.email ? user.email.split('@')[0].toUpperCase() : 'USER');
+    const formattedUsername = displayName;
 
     return (
         <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 rounded-3xl shadow-lg shadow-indigo-500/20 dark:shadow-indigo-900/40 border border-indigo-400/30 dark:border-indigo-400/10 p-8 mb-8 flex items-center justify-between group">
@@ -20,7 +20,7 @@ function WelcomeBanner({ role, title, subtitle, imageSrc }) {
                     {role} Dashboard
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-2 drop-shadow-md">
-                    {title || `Welcome back, ${formattedUsername}!`}
+                    {title || `Welcome back, ${formattedUsername}`}
                 </h1>
                 <p className="text-indigo-100 text-[15px] font-medium leading-relaxed max-w-md drop-shadow-sm">
                     {subtitle || "Here's what's happening today. Let's make it a great and productive day."}

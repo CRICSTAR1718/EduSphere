@@ -51,8 +51,8 @@ function Navbar({ toggleSidebar }) {
                                 <UserCircleIcon className="w-6 h-6" />
                             </div>
                             <div className="hidden sm:block text-left">
-                                <div className="text-[13px] font-semibold text-slate-700 dark:text-gray-200">{user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}</div>
-                                <div className="text-[11px] font-medium text-slate-500 dark:text-gray-400 max-w-[120px] truncate">{user?.email}</div>
+                                <div className="text-[13px] font-semibold text-slate-700 dark:text-gray-200">{user?.name ? user.name.toUpperCase() : (user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User')}</div>
+                                <div className="text-[11px] font-medium text-slate-500 dark:text-gray-400 max-w-[120px] truncate">{user?.name ? (user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User') : user?.email}</div>
                             </div>
                         </div>
 

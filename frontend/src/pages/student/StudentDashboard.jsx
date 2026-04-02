@@ -117,6 +117,7 @@ function StudentDashboard() {
                 <WelcomeBanner 
                     role="Student" 
                     imageSrc={studentHero} 
+                    title={`Welcome back, ${user?.name?.toUpperCase() || "STUDENT"}`}
                 />
                 
                 <AttendanceWarningBanner average={numericAverage} />
