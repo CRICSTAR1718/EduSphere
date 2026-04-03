@@ -57,7 +57,7 @@ function FinalGatepassApproval() {
             <div className="space-y-8 animate-fadeIn">
                 <h2 className="text-xl font-semibold">Final Gatepass Approvals</h2>
 
-                <div className="bg-white rounded-xl shadow-md p-6 overflow-x-auto">
+                <div className="bg-white rounded-xl shadow-md p-6 overflow-x-auto hidden md:block">
                     <table className="w-full text-left">
                         <thead className="border-b">
                             <tr className="text-gray-500 text-sm">
@@ -79,13 +79,13 @@ function FinalGatepassApproval() {
                                     <td>{new Date(req.outDate).toLocaleString()}</td>
                                     <td>{new Date(req.inDate).toLocaleString()}</td>
                                     <td className="space-x-2">
-                                        <button 
+                                        <button
                                             onClick={() => handleAction(req._id, "approved_by_warden")}
                                             className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition text-sm"
                                         >
                                             Final Approve
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={() => handleAction(req._id, "rejected_by_warden")}
                                             className="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition text-sm"
                                         >
@@ -101,6 +101,58 @@ function FinalGatepassApproval() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card Layout */}
+                <div className="block md:hidden space-y-4">
+                    {requests.map((req) => (
+                        <div key={req._id} className="bg-white rounded-xl shadow-md p-4 border border-slate-100">
+                            <div className="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 className="font-semibold text-slate-800 text-sm">
+                                        {req.student?.name}
+                                    </h3>
+                                    <p className="text-xs text-indigo-600 font-bold mt-1">{req.student?.enrollmentNo}</p>
+                                </div>
+                            </div>
+
+                            <div className="mb-3">
+                                <p className="text-xs text-slate-500 mb-2">Reason</p>
+                                <p className="text-sm text-slate-700 bg-slate-50 rounded-lg p-3">{req.reason}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div className="bg-slate-50 rounded-lg p-3">
+                                    <p className="text-xs text-slate-500 mb-1">Out Date</p>
+                                    <p className="font-medium text-slate-800 text-sm">{new Date(req.outDate).toLocaleString()}</p>
+                                </div>
+                                <div className="bg-slate-50 rounded-lg p-3">
+                                    <p className="text-xs text-slate-500 mb-1">In Date</p>
+                                    <p className="font-medium text-slate-800 text-sm">{new Date(req.inDate).toLocaleString()}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => handleAction(req._id, "approved_by_warden")}
+                                    className="flex-1 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all text-sm font-medium"
+                                >
+                                    Final Approve
+                                </button>
+                                <button
+                                    onClick={() => handleAction(req._id, "rejected_by_warden")}
+                                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all text-sm font-medium"
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {requests.length === 0 && (
+                        <div className="bg-white rounded-xl shadow-md p-8 text-center text-slate-500">
+                            No pending final approvals.
+                        </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>

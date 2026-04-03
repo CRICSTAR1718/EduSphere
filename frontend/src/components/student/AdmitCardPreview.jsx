@@ -10,24 +10,24 @@ const AdmitCardPreview = ({ studentData }) => {
     };
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
             {/* Control Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
                 <div>
-                    <h2 className="text-lg font-bold text-gray-800">Admit Card Preview</h2>
+                    <h2 className="text-base sm:text-lg font-bold text-gray-800">Admit Card Preview</h2>
                     <p className="text-sm text-gray-500">Please verify all details before downloading.</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button
                         onClick={handlePrint}
-                        className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg font-semibold transition-all border border-gray-200"
+                        className="flex items-center justify-center gap-2 px-4 py-2 text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg font-semibold transition-all border border-gray-200 text-sm"
                     >
                         <FiPrinter className="text-lg" />
                         Print
                     </button>
                     <button
                         onClick={handlePrint}
-                        className="flex items-center gap-2 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-lg shadow-indigo-100 transition-all"
+                        className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-lg shadow-indigo-100 transition-all text-sm"
                     >
                         <FiDownload className="text-lg" />
                         Download PDF
@@ -36,14 +36,14 @@ const AdmitCardPreview = ({ studentData }) => {
             </div>
 
             {/* Main Preview Container */}
-            <div className="bg-gray-100 p-8 rounded-2xl overflow-x-auto print:p-0 print:bg-white">
+            <div className="bg-gray-100 p-4 sm:p-8 rounded-2xl overflow-x-auto print:p-0 print:bg-white">
                 <div className="min-w-fit mx-auto print:min-w-0">
                     <AdmitCardTemplate studentData={studentData} />
                 </div>
             </div>
 
             {/* Warning/Note */}
-            <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 items-start">
+            <div className="p-3 sm:p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 items-start">
                 <div className="text-amber-500 mt-0.5">⚠️</div>
                 <p className="text-sm text-amber-800">
                     <strong>Note:</strong> In case of any discrepancy in the details shown, please contact the University Academic Cell immediately.

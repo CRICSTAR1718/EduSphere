@@ -6,7 +6,7 @@ function EventWidget() {
     const { events } = useContext(EventContext);
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col h-[350px]">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col min-h-[280px] h-full">
             <h3 className="font-semibold mb-3 dark:text-white">Upcoming Events</h3>
 
             {events.slice(0, 3).map(event => (

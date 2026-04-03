@@ -55,7 +55,7 @@ function ExamResults() {
                     </p>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto hidden md:block">
                     <table className="min-w-full text-sm">
                         <thead className="bg-indigo-600 text-white">
                             <tr>
@@ -72,15 +72,15 @@ function ExamResults() {
                         <tbody className="text-gray-700 divide-y divide-slate-100">
                             {results.length > 0 ? (
                                 results.map((result, idx) => (
-                                    <ResultRow 
+                                    <ResultRow
                                         key={idx}
-                                        subject={result.subject} 
+                                        subject={result.subject}
                                         semester={result.semester}
                                         internal={result.internal}
                                         midterm={result.midterm}
                                         final={result.final}
                                         total={result.total}
-                                        grade={result.grade} 
+                                        grade={result.grade}
                                     />
                                 ))
                             ) : (
@@ -92,6 +92,47 @@ function ExamResults() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card Layout */}
+                <div className="block md:hidden space-y-4">
+                    {results.length > 0 ? (
+                        results.map((result, idx) => (
+                            <div key={idx} className="bg-white rounded-xl shadow-md p-4 border border-slate-100">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="font-semibold text-slate-800 text-sm">
+                                            {result.subject}
+                                        </h3>
+                                        <p className="text-xs text-indigo-600 font-bold mt-1">Semester {result.semester}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-lg font-bold text-slate-800">{result.total}/100</p>
+                                        <p className="text-sm font-semibold text-indigo-600">{result.grade}</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div className="bg-slate-50 rounded-lg p-3 text-center">
+                                        <p className="text-xs text-slate-500 mb-1">Internal</p>
+                                        <p className="font-medium text-slate-800 text-sm">{result.internal}/30</p>
+                                    </div>
+                                    <div className="bg-slate-50 rounded-lg p-3 text-center">
+                                        <p className="text-xs text-slate-500 mb-1">Mid Term</p>
+                                        <p className="font-medium text-slate-800 text-sm">{result.midterm}/20</p>
+                                    </div>
+                                    <div className="bg-slate-50 rounded-lg p-3 text-center">
+                                        <p className="text-xs text-slate-500 mb-1">End Term</p>
+                                        <p className="font-medium text-slate-800 text-sm">{result.final}/50</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="bg-white rounded-xl shadow-md p-8 text-center text-slate-400">
+                            No results declared yet for your ward.
+                        </div>
+                    )}
                 </div>
             </div>
         </DashboardLayout>

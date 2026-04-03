@@ -113,8 +113,8 @@ function Reports() {
                             <button
                                 onClick={() => setShowLowOnly(false)}
                                 className={`px-4 py-2 rounded-md text-sm transition ${!showLowOnly
-                                        ? "bg-indigo-600 text-white"
-                                        : "bg-gray-200 text-slate-700"
+                                    ? "bg-indigo-600 text-white"
+                                    : "bg-gray-200 text-slate-700"
                                     }`}
                             >
                                 All Students
@@ -123,8 +123,8 @@ function Reports() {
                             <button
                                 onClick={() => setShowLowOnly(true)}
                                 className={`px-4 py-2 rounded-md text-sm transition ${showLowOnly
-                                        ? "bg-red-600 text-white"
-                                        : "bg-gray-200 text-slate-700"
+                                    ? "bg-red-600 text-white"
+                                    : "bg-gray-200 text-slate-700"
                                     }`}
                             >
                                 Below {ATTENDANCE_THRESHOLD}%
@@ -165,8 +165,8 @@ function Reports() {
 
                                             <td
                                                 className={`p-4 font-semibold ${isLow
-                                                        ? "text-red-600"
-                                                        : "text-green-600"
+                                                    ? "text-red-600"
+                                                    : "text-green-600"
                                                     }`}
                                             >
                                                 {student.attendance}%
@@ -175,8 +175,8 @@ function Reports() {
                                             <td className="p-4">
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-xs font-medium ${isLow
-                                                            ? "bg-red-100 text-red-600"
-                                                            : "bg-green-100 text-green-600"
+                                                        ? "bg-red-100 text-red-600"
+                                                        : "bg-green-100 text-green-600"
                                                         }`}
                                                 >
                                                     {isLow
@@ -190,6 +190,38 @@ function Reports() {
                             </tbody>
 
                         </table>
+                    </div>
+
+                    {/* Mobile Card Layout */}
+                    <div className="block md:hidden p-4 space-y-4">
+                        {filteredStudents.map(student => {
+                            const isLow = student.attendance < ATTENDANCE_THRESHOLD;
+
+                            return (
+                                <div key={student.id} className={`rounded-xl p-4 border ${isLow ? "bg-red-50 border-red-200" : "bg-slate-50 border-slate-200"}`}>
+                                    <div className="flex justify-between items-start mb-3">
+                                        <h3 className="font-semibold text-slate-800 text-sm">
+                                            {student.name}
+                                        </h3>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${isLow
+                                            ? "bg-red-100 text-red-600"
+                                            : "bg-green-100 text-green-600"
+                                            }`}>
+                                            {isLow ? "Below Threshold" : "Good Standing"}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex justify-center">
+                                        <div className={`text-center px-6 py-4 rounded-lg ${isLow ? "bg-red-100" : "bg-green-100"}`}>
+                                            <p className={`text-2xl font-bold ${isLow ? "text-red-600" : "text-green-600"}`}>
+                                                {student.attendance}%
+                                            </p>
+                                            <p className="text-xs text-slate-600 mt-1">Attendance Rate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                 </div>

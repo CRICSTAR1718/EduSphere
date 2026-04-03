@@ -47,7 +47,7 @@ function HostelLogs() {
                     Hostel In/Out Logs
                 </h2>
 
-                <div className="bg-white rounded-xl shadow-md p-6 overflow-x-auto">
+                <div className="bg-white rounded-xl shadow-md p-6 overflow-x-auto hidden md:block">
                     <table className="w-full text-left">
                         <thead className="border-b">
                             <tr className="text-gray-500 text-sm">
@@ -80,6 +80,40 @@ function HostelLogs() {
                             ))}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card Layout */}
+                <div className="block md:hidden space-y-4">
+                    {logs.map((log) => (
+                        <div key={log.id} className="bg-white rounded-xl shadow-md p-4 border border-slate-100">
+                            <div className="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 className="font-semibold text-slate-800 text-sm">
+                                        {log.student}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 mt-1">{log.date}</p>
+                                </div>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium
+                                    ${log.status === "Out"
+                                        ? "bg-red-100 text-red-600"
+                                        : "bg-green-100 text-green-600"
+                                    }`}>
+                                    {log.status}
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-slate-50 rounded-lg p-3 text-center">
+                                    <p className="text-xs text-slate-500 mb-1">Out Time</p>
+                                    <p className="font-medium text-slate-800 text-sm">{log.outTime}</p>
+                                </div>
+                                <div className="bg-slate-50 rounded-lg p-3 text-center">
+                                    <p className="text-xs text-slate-500 mb-1">In Time</p>
+                                    <p className="font-medium text-slate-800 text-sm">{log.inTime}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
             </div>

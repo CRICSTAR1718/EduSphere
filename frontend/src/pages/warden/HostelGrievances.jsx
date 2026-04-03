@@ -60,7 +60,7 @@ function HostelGrievances() {
                     Hostel Grievances
                 </h2>
 
-                <div className="bg-white rounded-xl shadow-md p-6 overflow-x-auto">
+                <div className="bg-white rounded-xl shadow-md p-6 overflow-x-auto hidden md:block">
                     <table className="w-full text-left">
                         <thead className="border-b">
                             <tr className="text-gray-500 text-sm">
@@ -97,6 +97,40 @@ function HostelGrievances() {
                             ))}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card Layout */}
+                <div className="block md:hidden space-y-4">
+                    {grievances.map((item) => (
+                        <div key={item.id} className="bg-white rounded-xl shadow-md p-4 border border-slate-100">
+                            <div className="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 className="font-semibold text-slate-800 text-sm">
+                                        {item.student}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 mt-1">{item.date}</p>
+                                </div>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium
+                                    ${item.status === "Pending"
+                                        ? "bg-yellow-100 text-yellow-600"
+                                        : "bg-green-100 text-green-600"
+                                    }`}>
+                                    {item.status}
+                                </span>
+                            </div>
+
+                            <div className="mb-3">
+                                <p className="text-xs text-slate-500 mb-2">Issue</p>
+                                <p className="text-sm text-slate-700 bg-slate-50 rounded-lg p-3">{item.issue}</p>
+                            </div>
+
+                            <div className="flex justify-end">
+                                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium">
+                                    Mark Resolved
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
             </div>

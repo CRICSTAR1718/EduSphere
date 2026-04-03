@@ -6,12 +6,12 @@ function ManageMarks() {
     const [courses, setCourses] = useState([]);
     const [selectedCourseId, setSelectedCourseId] = useState("");
     const [examType, setExamType] = useState("internal");
-    
+
     const [students, setStudents] = useState([]);
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingStudents, setLoadingStudents] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    
+
     const [message, setMessage] = useState({ type: "", text: "" });
 
     // Define max marks based on examType
@@ -45,7 +45,7 @@ function ManageMarks() {
     useEffect(() => {
         const fetchClassStudents = async () => {
             if (!selectedCourseId) return;
-            
+
             const selectedCourse = courses.find(c => c._id === selectedCourseId);
             if (!selectedCourse) return;
 
@@ -55,13 +55,13 @@ function ManageMarks() {
                     department: selectedCourse.department,
                     semester: selectedCourse.semester
                 });
-                
+
                 // Initialize marks array
                 const studentsWithMarks = (data.students || []).map(student => ({
                     ...student,
-                    score: "" 
+                    score: ""
                 }));
-                
+
                 setStudents(studentsWithMarks);
                 setMessage({ type: "", text: "" });
             } catch (err) {
@@ -88,21 +88,21 @@ function ManageMarks() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage({ type: "", text: "" });
-        
+
         if (!selectedCourseId) {
             setMessage({ type: "error", text: "Please select a course." });
             return;
         }
-        
+
         const validMarks = students.filter(s => s.score !== "" && s.score !== null);
-        
+
         if (validMarks.length === 0) {
             setMessage({ type: "error", text: "Please enter marks for at least one student." });
             return;
         }
 
         const selectedCourse = courses.find(c => c._id === selectedCourseId);
-        
+
         const records = validMarks.map(s => {
             const numScore = Number(s.score);
             return {
@@ -159,7 +159,7 @@ function ManageMarks() {
                             ))}
                         </select>
                     </div>
-                    
+
                     <div className="md:w-1/3">
                         <label className="block text-sm font-medium text-slate-700 mb-1.5">
                             Exam Type <span className="text-red-400">*</span>
@@ -178,11 +178,10 @@ function ManageMarks() {
 
                 {/* ═══ Messages ═══ */}
                 {message.text && (
-                    <div className={`p-4 rounded-xl text-sm font-medium border ${
-                        message.type === "error" 
-                            ? "bg-red-50 text-red-600 border-red-100" 
+                    <div className={`p-4 rounded-xl text-sm font-medium border ${message.type === "error"
+                            ? "bg-red-50 text-red-600 border-red-100"
                             : "bg-emerald-50 text-emerald-700 border-emerald-100"
-                    }`}>
+                        }`}>
                         {message.text}
                     </div>
                 )}
@@ -202,7 +201,7 @@ function ManageMarks() {
                         </div>
                     ) : students.length === 0 ? (
                         <div className="p-12 text-center text-slate-500">
-                            No students found for this class. 
+                            No students found for this class.
                         </div>
                     ) : (
                         <>
@@ -240,7 +239,40 @@ function ManageMarks() {
                                     </tbody>
                                 </table>
                             </div>
-                            
+
+                            {/* Mobile Card Layout */}
+                            <div className="block md:hidden p-4 space-y-4">
+                                {students.map(student => (
+                                    <div key={student._id} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h3 className="font-semibold text-slate-800 text-sm">
+                                                    {student.name}
+                                                </h3>
+                                                <p className="text-xs text-slate-500 mt-1">Roll No: {student.enrollmentNo}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-slate-500 mb-2">
+                                                    Score (0-{maxAllowed})
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    max={maxAllowed}
+                                                    placeholder={`0-${maxAllowed}`}
+                                                    value={student.score}
+                                                    onChange={(e) => updateScore(student._id, e.target.value)}
+                                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-all font-medium text-slate-700"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
                             <div className="p-6 border-t bg-slate-50/50 flex justify-end">
                                 <button
                                     onClick={handleSubmit}

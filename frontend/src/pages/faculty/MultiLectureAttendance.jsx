@@ -8,7 +8,7 @@ function MultiLectureAttendance() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [lectures, setLectures] = useState([{ id: 1, slot: "" }]);
     const [students, setStudents] = useState([]);
-    
+
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingStudents, setLoadingStudents] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -37,7 +37,7 @@ function MultiLectureAttendance() {
     useEffect(() => {
         const fetchClassStudents = async () => {
             if (!selectedCourseId) return;
-            
+
             const selectedCourse = courses.find(c => c._id === selectedCourseId);
             if (!selectedCourse) return;
 
@@ -47,13 +47,13 @@ function MultiLectureAttendance() {
                     department: selectedCourse.department,
                     semester: selectedCourse.semester
                 });
-                
+
                 // For multi-lecture, we need an attendance array matching the length of lectures
                 const studentsWithStatus = (data.students || []).map(student => ({
                     ...student,
                     attendance: lectures.map(() => "Present") // Initial status for each lecture slot
                 }));
-                
+
                 setStudents(studentsWithStatus);
                 setMessage({ type: "", text: "" });
             } catch (err) {
@@ -100,7 +100,7 @@ function MultiLectureAttendance() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage({ type: "", text: "" });
-        
+
         if (!selectedCourseId) {
             setMessage({ type: "error", text: "Please select a course." });
             return;
@@ -113,19 +113,19 @@ function MultiLectureAttendance() {
         }
 
         const selectedCourse = courses.find(c => c._id === selectedCourseId);
-        
+
         setSubmitting(true);
         try {
             // We need to submit one batch per lecture slot, assuming backend takes 1 date + subject
             // If backend handles multiple slots uniquely, we'd need a different API. 
             // For now, we will just submit them all back-to-back or in sequence for the same date.
-            
+
             for (let i = 0; i < lectures.length; i++) {
                 const recordsForThisLecture = students.map(s => ({
                     student: s._id,
                     status: s.attendance[i].toLowerCase()
                 }));
-                
+
                 // For multiple lectures on same day, we append the slot string to the date or just assume the backend allows multiple marking per day. 
                 // The backend models allow multiple, but let's submit them iteratively.
                 await markAttendance({
@@ -217,11 +217,10 @@ function MultiLectureAttendance() {
 
                 {/* ═══ Messages ═══ */}
                 {message.text && (
-                    <div className={`p-4 rounded-xl text-sm font-medium border ${
-                        message.type === "error" 
-                            ? "bg-red-50 text-red-600 border-red-100" 
+                    <div className={`p-4 rounded-xl text-sm font-medium border ${message.type === "error"
+                            ? "bg-red-50 text-red-600 border-red-100"
                             : "bg-emerald-50 text-emerald-700 border-emerald-100"
-                    }`}>
+                        }`}>
                         {message.text}
                     </div>
                 )}
@@ -241,69 +240,124 @@ function MultiLectureAttendance() {
                         </div>
                     ) : students.length === 0 ? (
                         <div className="p-12 text-center text-slate-500">
-                            No students found for this class. 
+                            No students found for this class.
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full text-sm">
-                                <thead className="bg-slate-50 text-slate-600 border-b border-slate-100">
-                                    <tr>
-                                        <th className="p-4 text-left font-semibold">Roll No.</th>
-                                        <th className="p-4 text-left font-semibold">Student Name</th>
-                                        {lectures.map((lecture, index) => (
-                                            <th key={lecture.id} className="p-4 text-center font-semibold text-indigo-700">
-                                                Lec {index + 1}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {students.map(student => (
-                                        <tr key={student._id} className="hover:bg-slate-50/50 transition">
-                                            <td className="p-4 text-slate-600 font-medium whitespace-nowrap">
-                                                {student.enrollmentNo}
-                                            </td>
-                                            <td className="p-4 text-slate-800 font-medium whitespace-nowrap">
-                                                {student.name}
-                                            </td>
-
+                        <>
+                            <div className="overflow-x-auto hidden md:block">
+                                <table className="min-w-full text-sm">
+                                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-100">
+                                        <tr>
+                                            <th className="p-4 text-left font-semibold">Roll No.</th>
+                                            <th className="p-4 text-left font-semibold">Student Name</th>
                                             {lectures.map((lecture, index) => (
-                                                <td key={lecture.id} className="p-4 text-center">
-                                                    <select 
-                                                        className={`border rounded-lg text-xs font-semibold px-2 py-1 outline-none ${
-                                                            student.attendance[index] === "Present" 
-                                                                ? "border-emerald-200 text-emerald-700 bg-emerald-50"
-                                                                : "border-rose-200 text-rose-700 bg-rose-50"
-                                                        }`}
-                                                        value={student.attendance[index]}
-                                                        onChange={(e) => toggleStudentAttendance(student._id, index, e.target.value)}
-                                                    >
-                                                        <option value="Present">Present</option>
-                                                        <option value="Absent">Absent</option>
-                                                    </select>
-                                                </td>
+                                                <th key={lecture.id} className="p-4 text-center font-semibold text-indigo-700">
+                                                    Lec {index + 1}
+                                                </th>
                                             ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        
-                            <div className="p-6 border-t bg-slate-50/50 flex justify-end">
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={submitting}
-                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-md hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all flex items-center gap-2"
-                                >
-                                    {submitting && (
-                                        <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                    )}
-                                    {submitting ? "Uploading..." : "Submit All Attendance"}
-                                </button>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {students.map(student => (
+                                            <tr key={student._id} className="hover:bg-slate-50/50 transition">
+                                                <td className="p-4 text-slate-600 font-medium whitespace-nowrap">
+                                                    {student.enrollmentNo}
+                                                </td>
+                                                <td className="p-4 text-slate-800 font-medium whitespace-nowrap">
+                                                    {student.name}
+                                                </td>
+
+                                                {lectures.map((lecture, index) => (
+                                                    <td key={lecture.id} className="p-4 text-center">
+                                                        <select
+                                                            className={`border rounded-lg text-xs font-semibold px-2 py-1 outline-none ${student.attendance[index] === "Present"
+                                                                    ? "border-emerald-200 text-emerald-700 bg-emerald-50"
+                                                                    : "border-rose-200 text-rose-700 bg-rose-50"
+                                                                }`}
+                                                            value={student.attendance[index]}
+                                                            onChange={(e) => toggleStudentAttendance(student._id, index, e.target.value)}
+                                                        >
+                                                            <option value="Present">Present</option>
+                                                            <option value="Absent">Absent</option>
+                                                        </select>
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+
+                                <div className="p-6 border-t bg-slate-50/50 flex justify-end">
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={submitting}
+                                        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-md hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all flex items-center gap-2"
+                                    >
+                                        {submitting && (
+                                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        )}
+                                        {submitting ? "Uploading..." : "Submit All Attendance"}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+
+                            {/* Mobile Card Layout */}
+                            <div className="block md:hidden p-4 space-y-4">
+                                {students.map(student => (
+                                    <div key={student._id} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h3 className="font-semibold text-slate-800 text-sm">
+                                                    {student.name}
+                                                </h3>
+                                                <p className="text-xs text-indigo-600 font-bold mt-1">{student.enrollmentNo}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <p className="text-xs text-slate-500 mb-2">Lecture Attendance</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {lectures.map((lecture, index) => (
+                                                    <div key={lecture.id} className="bg-white rounded-lg p-3 border">
+                                                        <p className="text-xs text-slate-500 mb-2">Lec {index + 1}</p>
+                                                        <select
+                                                            className={`w-full border rounded-lg text-xs font-semibold px-2 py-1 outline-none ${student.attendance[index] === "Present"
+                                                                    ? "border-emerald-200 text-emerald-700 bg-emerald-50"
+                                                                    : "border-rose-200 text-rose-700 bg-rose-50"
+                                                                }`}
+                                                            value={student.attendance[index]}
+                                                            onChange={(e) => toggleStudentAttendance(student._id, index, e.target.value)}
+                                                        >
+                                                            <option value="Present">Present</option>
+                                                            <option value="Absent">Absent</option>
+                                                        </select>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                <div className="p-4 border-t bg-slate-50/50 flex justify-end">
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={submitting}
+                                        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-md hover:shadow-lg focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all flex items-center gap-2"
+                                    >
+                                        {submitting && (
+                                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        )}
+                                        {submitting ? "Uploading..." : "Submit All Attendance"}
+                                    </button>
+                                </div>
+                            </div>
+                        </>
                     )}
                 </div>
 

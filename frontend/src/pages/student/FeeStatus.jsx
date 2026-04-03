@@ -49,7 +49,7 @@ const FeeStatus = () => {
     const totalDue = fees.reduce((sum, fee) => sum + fee.amount, 0);
     const paidAmount = fees.filter(fee => fee.status === 'paid').reduce((sum, fee) => sum + fee.amount, 0);
     const pendingAmount = totalDue - paidAmount;
-    
+
     // Find the most recent paid fee
     const sortedPaidFees = [...fees].filter(f => f.status === 'paid').sort((a, b) => new Date(b.paidDate) - new Date(a.paidDate));
     const lastPayment = sortedPaidFees.length > 0 ? {
@@ -77,15 +77,15 @@ const FeeStatus = () => {
 
     return (
         <DashboardLayout>
-            <div className="max-w-6xl mx-auto space-y-8">
+            <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
                 <header>
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Fee Status</h1>
-                    <p className="text-gray-500 mt-1">Review your financial records and settlement history.</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Fee Status</h1>
+                    <p className="text-gray-500 mt-1 text-sm sm:text-base">Review your financial records and settlement history.</p>
                 </header>
 
                 <FeeSummary feeData={summaryData} />
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                     <PaymentHistory transactions={formattedTransactions} />
                 </div>
             </div>

@@ -211,11 +211,10 @@ function ManageUsers() {
                             <button
                                 key={tab.key}
                                 onClick={() => setRoleFilter(tab.key)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    roleFilter === tab.key
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${roleFilter === tab.key
                                         ? "bg-white text-indigo-700 shadow-sm"
                                         : "text-slate-500 hover:text-slate-700"
-                                }`}
+                                    }`}
                             >
                                 {tab.label}
                             </button>
@@ -254,94 +253,168 @@ function ManageUsers() {
                             </p>
                         </div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full text-sm">
-                                <thead>
-                                    <tr className="bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700">
-                                        <th className="p-4 text-left font-semibold">Name</th>
-                                        <th className="p-4 text-left font-semibold">Email</th>
-                                        <th className="p-4 text-left font-semibold">Role</th>
-                                        <th className="p-4 text-left font-semibold">
-                                            {roleFilter === "parent" ? "Parent of" : "Dept / Ward"}
-                                        </th>
-                                        <th className="p-4 text-left font-semibold">ID / Reg No</th>
-                                        <th className="p-4 text-left font-semibold">Status</th>
-                                        <th className="p-4 text-center font-semibold">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {users.map((user) => (
-                                        <tr
-                                            key={user._id}
-                                            className="border-t border-slate-100 hover:bg-slate-50/70 transition-colors"
-                                        >
-                                            <td className="p-4 font-medium text-slate-800">
-                                                {user.name}
-                                            </td>
-                                            <td className="p-4 text-slate-600">
-                                                {user.email}
-                                            </td>
-                                            <td className="p-4">
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${
-                                                        roleBadge[user.role] || "bg-gray-100 text-gray-700"
-                                                    }`}
-                                                >
+                        <>
+                            <div className="overflow-x-auto hidden md:block">
+                                <table className="min-w-full text-sm">
+                                    <thead>
+                                        <tr className="bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700">
+                                            <th className="p-4 text-left font-semibold">Name</th>
+                                            <th className="p-4 text-left font-semibold">Email</th>
+                                            <th className="p-4 text-left font-semibold">Role</th>
+                                            <th className="p-4 text-left font-semibold">
+                                                {roleFilter === "parent" ? "Parent of" : "Dept / Ward"}
+                                            </th>
+                                            <th className="p-4 text-left font-semibold">ID / Reg No</th>
+                                            <th className="p-4 text-left font-semibold">Status</th>
+                                            <th className="p-4 text-center font-semibold">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map((user) => (
+                                            <tr
+                                                key={user._id}
+                                                className="border-t border-slate-100 hover:bg-slate-50/70 transition-colors"
+                                            >
+                                                <td className="p-4 font-medium text-slate-800">
+                                                    {user.name}
+                                                </td>
+                                                <td className="p-4 text-slate-600">
+                                                    {user.email}
+                                                </td>
+                                                <td className="p-4">
+                                                    <span
+                                                        className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${roleBadge[user.role] || "bg-gray-100 text-gray-700"
+                                                            }`}
+                                                    >
+                                                        {user.role}
+                                                    </span>
+                                                </td>
+                                                <td className="p-4 text-slate-600">
+                                                    {user.role === 'parent' ? (
+                                                        <span className="text-indigo-600 font-medium">{user.student?.name || "—"}</span>
+                                                    ) : (
+                                                        user.department || "—"
+                                                    )}
+                                                </td>
+                                                <td className="p-4 text-slate-600">
+                                                    {user.role === 'parent' ? (
+                                                        user.student?.enrollmentNo || "—"
+                                                    ) : (
+                                                        user.enrollmentNo || "—"
+                                                    )}
+                                                </td>
+                                                <td className="p-4">
+                                                    <span
+                                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${user.isActive !== false
+                                                                ? "bg-emerald-100 text-emerald-700"
+                                                                : "bg-red-100 text-red-700"
+                                                            }`}
+                                                    >
+                                                        {user.isActive !== false ? "Active" : "Inactive"}
+                                                    </span>
+                                                </td>
+                                                <td className="p-4">
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <button
+                                                            onClick={() => openEditModal(user)}
+                                                            className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
+                                                            title="Edit"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setDeleteTarget(user)}
+                                                            className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                                                            title="Delete"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Mobile Card Layout */}
+                            <div className="block md:hidden p-4 space-y-4">
+                                {users.map((user) => (
+                                    <div key={user._id} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h3 className="font-semibold text-slate-800 text-sm">
+                                                    {user.name}
+                                                </h3>
+                                                <p className="text-xs text-slate-500 mt-1">{user.email}</p>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-2">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${roleBadge[user.role] || "bg-gray-100 text-gray-700"
+                                                    }`}>
                                                     {user.role}
                                                 </span>
-                                            </td>
-                                            <td className="p-4 text-slate-600">
-                                                {user.role === 'parent' ? (
-                                                    <span className="text-indigo-600 font-medium">{user.student?.name || "—"}</span>
-                                                ) : (
-                                                    user.department || "—"
-                                                )}
-                                            </td>
-                                            <td className="p-4 text-slate-600">
-                                                {user.role === 'parent' ? (
-                                                    user.student?.enrollmentNo || "—"
-                                                ) : (
-                                                    user.enrollmentNo || "—"
-                                                )}
-                                            </td>
-                                            <td className="p-4">
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                                        user.isActive !== false
-                                                            ? "bg-emerald-100 text-emerald-700"
-                                                            : "bg-red-100 text-red-700"
-                                                    }`}
-                                                >
+                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${user.isActive !== false
+                                                        ? "bg-emerald-100 text-emerald-700"
+                                                        : "bg-red-100 text-red-700"
+                                                    }`}>
                                                     {user.isActive !== false ? "Active" : "Inactive"}
                                                 </span>
-                                            </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <button
-                                                        onClick={() => openEditModal(user)}
-                                                        className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
-                                                        title="Edit"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                        </svg>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setDeleteTarget(user)}
-                                                        className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3 mb-3">
+                                            <div className="bg-white rounded-lg p-3 border">
+                                                <p className="text-xs text-slate-500 mb-1">
+                                                    {user.role === 'parent' ? "Parent of" : "Department"}
+                                                </p>
+                                                <p className="font-medium text-slate-800 text-sm">
+                                                    {user.role === 'parent' ? (
+                                                        user.student?.name || "—"
+                                                    ) : (
+                                                        user.department || "—"
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="bg-white rounded-lg p-3 border">
+                                                <p className="text-xs text-slate-500 mb-1">ID / Reg No</p>
+                                                <p className="font-medium text-slate-800 text-sm">
+                                                    {user.role === 'parent' ? (
+                                                        user.student?.enrollmentNo || "—"
+                                                    ) : (
+                                                        user.enrollmentNo || "—"
+                                                    )}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                onClick={() => openEditModal(user)}
+                                                className="flex items-center gap-2 px-3 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-all text-sm font-medium"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                </svg>
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => setDeleteTarget(user)}
+                                                className="flex items-center gap-2 px-3 py-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all text-sm font-medium"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
             </div>
@@ -509,8 +582,8 @@ function ManageUsers() {
                                     {saving
                                         ? "Saving..."
                                         : editingUser
-                                        ? "Update User"
-                                        : `Add ${formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}`}
+                                            ? "Update User"
+                                            : `Add ${formData.role.charAt(0).toUpperCase() + formData.role.slice(1)}`}
                                 </button>
                             </div>
                         </form>

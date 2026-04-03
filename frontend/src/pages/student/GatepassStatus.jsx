@@ -52,50 +52,66 @@ function GatepassStatus() {
         );
     }
 
-    const parentStatus = latestPass.status === "pending_parent" ? "Pending" : 
-                       (latestPass.status === "rejected_by_parent" ? "Rejected" : "Approved");
-    
+    const parentStatus = latestPass.status === "pending_parent" ? "Pending" :
+        (latestPass.status === "rejected_by_parent" ? "Rejected" : "Approved");
+
     const wardenStatus = (latestPass.status === "pending_parent" || latestPass.status === "approved_by_parent") ? "Pending" :
-                        (latestPass.status === "rejected_by_parent" ? "N/A" :
-                        (latestPass.status === "rejected_by_warden" ? "Rejected" : "Approved"));
+        (latestPass.status === "rejected_by_parent" ? "N/A" :
+            (latestPass.status === "rejected_by_warden" ? "Rejected" : "Approved"));
 
     return (
         <DashboardLayout>
-            <div className="space-y-8 animate-fadeIn">
-                <h2 className="text-xl font-semibold">Current Gatepass Status</h2>
+            <div className="space-y-6 sm:space-y-8 animate-fadeIn">
+                <h2 className="text-lg sm:text-xl font-semibold">Current Gatepass Status</h2>
 
-                <div className="bg-white rounded-xl shadow-md p-6 space-y-4 max-w-xl">
-                    <p><strong>Type:</strong> {latestPass.type.charAt(0).toUpperCase() + latestPass.type.slice(1)}</p>
-                    <p><strong>Reason:</strong> {latestPass.reason}</p>
-                    <p><strong>Out Date:</strong> {new Date(latestPass.outDate).toLocaleString()}</p>
-                    <p><strong>In Date:</strong> {new Date(latestPass.inDate).toLocaleString()}</p>
+                <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 space-y-4 max-w-2xl mx-auto">
+                    <div className="text-center mb-6">
+                        <p className="text-sm font-medium text-gray-600 mb-2">Gatepass Type</p>
+                        <p className="text-lg font-bold text-indigo-600 capitalize">{latestPass.type}</p>
+                    </div>
 
-                    <div className="pt-4 border-t space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Parent Approval Status</span>
-                            <span className={`px-3 py-1 text-xs rounded-full font-medium ${
-                                parentStatus === "Approved" ? "bg-green-100 text-green-600" :
-                                parentStatus === "Rejected" ? "bg-red-100 text-red-600" : "bg-yellow-100 text-yellow-600"
-                            }`}>
-                                {parentStatus}
-                            </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Out Date & Time</p>
+                            <p className="text-sm font-semibold text-gray-800">{new Date(latestPass.outDate).toLocaleString()}</p>
                         </div>
-
-                        <div className="flex justify-between items-center">
-                            <span className="text-gray-600">Warden Approval Status</span>
-                            <span className={`px-3 py-1 text-xs rounded-full font-medium ${
-                                wardenStatus === "Approved" ? "bg-green-100 text-green-600" :
-                                wardenStatus === "Rejected" ? "bg-red-100 text-red-600" : 
-                                wardenStatus === "N/A" ? "bg-gray-100 text-gray-400" : "bg-yellow-100 text-yellow-600"
-                            }`}>
-                                {wardenStatus}
-                            </span>
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">In Date & Time</p>
+                            <p className="text-sm font-semibold text-gray-800">{new Date(latestPass.inDate).toLocaleString()}</p>
                         </div>
                     </div>
 
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                        <p className="text-sm font-medium text-gray-700 text-center">
-                            Overall Status: {getStatusLabel(latestPass.status).label}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Reason</p>
+                        <p className="text-sm font-semibold text-gray-800">{latestPass.reason}</p>
+                    </div>
+
+                    <div className="pt-4 border-t space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="flex flex-col items-center p-4 bg-white rounded-lg border">
+                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Parent Approval</span>
+                                <span className={`px-3 py-1 text-xs rounded-full font-medium ${parentStatus === "Approved" ? "bg-green-100 text-green-600" :
+                                        parentStatus === "Rejected" ? "bg-red-100 text-red-600" : "bg-yellow-100 text-yellow-600"
+                                    }`}>
+                                    {parentStatus}
+                                </span>
+                            </div>
+
+                            <div className="flex flex-col items-center p-4 bg-white rounded-lg border">
+                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Warden Approval</span>
+                                <span className={`px-3 py-1 text-xs rounded-full font-medium ${wardenStatus === "Approved" ? "bg-green-100 text-green-600" :
+                                        wardenStatus === "Rejected" ? "bg-red-100 text-red-600" :
+                                            wardenStatus === "N/A" ? "bg-gray-100 text-gray-400" : "bg-yellow-100 text-yellow-600"
+                                    }`}>
+                                    {wardenStatus}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
+                        <p className="text-sm font-medium text-indigo-800 text-center">
+                            <span className="font-bold">Overall Status:</span> {getStatusLabel(latestPass.status).label}
                         </p>
                     </div>
                 </div>

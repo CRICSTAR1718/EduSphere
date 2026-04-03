@@ -34,8 +34,8 @@ const Chatbot = () => {
             const response = await axios.post(
                 `${import.meta.env.VITE_CHATBOT_API_URL || "http://localhost:5002/api"}/chat`,
                 {
-                message: input,
-            });
+                    message: input,
+                });
 
             const botMessage = { role: "assistant", content: response.data.response };
             setMessages((prev) => [...prev, botMessage]);
@@ -125,7 +125,7 @@ const Chatbot = () => {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="absolute bottom-20 right-0 w-[350px] sm:w-[400px] h-[550px] flex flex-col rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 backdrop-blur-xl bg-white/80"
+                        className="absolute bottom-20 right-0 w-[90vw] max-w-[400px] sm:w-[400px] h-[65vh] sm:h-[550px] max-h-[80vh] flex flex-col rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/20 backdrop-blur-xl bg-white/80"
                     >
                         {/* Glassmorphic Header */}
                         <div className="px-6 py-5 bg-gradient-to-r from-blue-600/90 to-indigo-600/90 text-white backdrop-blur-md relative overflow-hidden">
@@ -156,16 +156,16 @@ const Chatbot = () => {
                                 >
                                     {/* Avatar */}
                                     <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold border ${msg.role === "user"
-                                            ? "bg-indigo-100 text-indigo-600 border-indigo-200"
-                                            : "bg-blue-600 text-white border-blue-400"
+                                        ? "bg-indigo-100 text-indigo-600 border-indigo-200"
+                                        : "bg-blue-600 text-white border-blue-400"
                                         }`}>
                                         {msg.role === "user" ? "U" : "AI"}
                                     </div>
 
                                     {/* Bubble */}
                                     <div className={`max-w-[75%] px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed ${msg.role === "user"
-                                            ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-medium rounded-br-none"
-                                            : "bg-white/90 text-slate-700 border border-slate-100 rounded-bl-none"
+                                        ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-medium rounded-br-none"
+                                        : "bg-white/90 text-slate-700 border border-slate-100 rounded-bl-none"
                                         }`}>
                                         {msg.content}
                                     </div>

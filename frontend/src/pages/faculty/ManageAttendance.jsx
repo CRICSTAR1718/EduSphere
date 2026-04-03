@@ -6,12 +6,12 @@ function ManageAttendance() {
     const [courses, setCourses] = useState([]);
     const [selectedCourseId, setSelectedCourseId] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    
+
     const [students, setStudents] = useState([]);
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [loadingStudents, setLoadingStudents] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    
+
     const [message, setMessage] = useState({ type: "", text: "" });
 
     // ─── Fetch Courses assigned to faculty ───
@@ -37,7 +37,7 @@ function ManageAttendance() {
     useEffect(() => {
         const fetchClassStudents = async () => {
             if (!selectedCourseId) return;
-            
+
             const selectedCourse = courses.find(c => c._id === selectedCourseId);
             if (!selectedCourse) return;
 
@@ -47,13 +47,13 @@ function ManageAttendance() {
                     department: selectedCourse.department,
                     semester: selectedCourse.semester
                 });
-                
+
                 // Initialize attendance array
                 const studentsWithStatus = (data.students || []).map(student => ({
                     ...student,
                     present: true // default present
                 }));
-                
+
                 setStudents(studentsWithStatus);
                 setMessage({ type: "", text: "" }); // clear messages when class changes
             } catch (err) {
@@ -75,14 +75,14 @@ function ManageAttendance() {
                 : student
         ));
     };
-    
-    const markAllPresent = () => setStudents(students.map(s => ({...s, present: true})));
-    const markAllAbsent = () => setStudents(students.map(s => ({...s, present: false})));
+
+    const markAllPresent = () => setStudents(students.map(s => ({ ...s, present: true })));
+    const markAllAbsent = () => setStudents(students.map(s => ({ ...s, present: false })));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage({ type: "", text: "" });
-        
+
         if (!selectedCourseId) {
             setMessage({ type: "error", text: "Please select a course." });
             return;
@@ -93,7 +93,7 @@ function ManageAttendance() {
         }
 
         const selectedCourse = courses.find(c => c._id === selectedCourseId);
-        
+
         const records = students.map(s => ({
             student: s._id,
             status: s.present ? "present" : "absent"
@@ -144,7 +144,7 @@ function ManageAttendance() {
                             ))}
                         </select>
                     </div>
-                    
+
                     <div className="md:w-1/3">
                         <label className="block text-sm font-medium text-slate-700 mb-1.5">
                             Date <span className="text-red-400">*</span>
@@ -161,11 +161,10 @@ function ManageAttendance() {
 
                 {/* ═══ Messages ═══ */}
                 {message.text && (
-                    <div className={`p-4 rounded-xl text-sm font-medium border ${
-                        message.type === "error" 
-                            ? "bg-red-50 text-red-600 border-red-100" 
+                    <div className={`p-4 rounded-xl text-sm font-medium border ${message.type === "error"
+                            ? "bg-red-50 text-red-600 border-red-100"
                             : "bg-emerald-50 text-emerald-700 border-emerald-100"
-                    }`}>
+                        }`}>
                         {message.text}
                     </div>
                 )}
@@ -181,7 +180,7 @@ function ManageAttendance() {
                                 </span>
                             )}
                         </h2>
-                        
+
                         {!loadingStudents && students.length > 0 && (
                             <div className="flex gap-2">
                                 <button type="button" onClick={markAllPresent} className="px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded-lg transition">All Present</button>
@@ -197,11 +196,11 @@ function ManageAttendance() {
                         </div>
                     ) : students.length === 0 ? (
                         <div className="p-12 text-center text-slate-500">
-                            No students found for this class. 
+                            No students found for this class.
                         </div>
                     ) : (
                         <>
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto hidden md:block">
                                 <table className="min-w-full text-sm">
                                     <thead className="bg-slate-50 text-slate-600">
                                         <tr>
@@ -221,8 +220,8 @@ function ManageAttendance() {
                                                 </td>
                                                 <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
                                                     <label className="relative inline-flex items-center cursor-pointer">
-                                                        <input 
-                                                            type="checkbox" 
+                                                        <input
+                                                            type="checkbox"
                                                             className="sr-only peer"
                                                             checked={student.present}
                                                             onChange={() => toggleAttendance(student._id)}
@@ -235,7 +234,38 @@ function ManageAttendance() {
                                     </tbody>
                                 </table>
                             </div>
-                            
+
+                            {/* Mobile Card Layout */}
+                            <div className="block md:hidden p-4 space-y-4">
+                                {students.map(student => (
+                                    <div key={student._id} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div>
+                                                <h3 className="font-semibold text-slate-800 text-sm">
+                                                    {student.name}
+                                                </h3>
+                                                <p className="text-xs text-slate-500 mt-1">Roll No: {student.enrollmentNo}</p>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${student.present ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+                                                    }`}>
+                                                    {student.present ? "Present" : "Absent"}
+                                                </span>
+                                                <label className="relative inline-flex items-center cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="sr-only peer"
+                                                        checked={student.present}
+                                                        onChange={() => toggleAttendance(student._id)}
+                                                    />
+                                                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
                             <div className="p-6 border-t bg-slate-50/50 flex justify-end">
                                 <button
                                     onClick={handleSubmit}

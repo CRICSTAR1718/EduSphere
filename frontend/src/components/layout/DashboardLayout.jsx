@@ -20,13 +20,11 @@ function DashboardLayout({ children }) {
     }, [open]);
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-b from-indigo-50/80 to-slate-100 dark:from-slate-900 dark:to-slate-950 transition-colors duration-300">
+        <div className="flex min-h-screen bg-gradient-to-b from-indigo-50/80 to-slate-100 dark:from-slate-900 dark:to-slate-950 transition-colors duration-300 overflow-hidden">
 
             {/* Sidebar */}
             <div
-                className={`fixed inset-y-0 left-0 z-40 w-64 transform 
-        ${open ? "translate-x-0" : "-translate-x-full"} 
-        transition-transform duration-300 ease-in-out`}
+                className={`fixed inset-y-0 left-0 z-40 w-64 transform ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 transition-transform duration-300 ease-in-out`}
             >
                 <Sidebar closeSidebar={() => setOpen(false)} />
             </div>
@@ -40,7 +38,7 @@ function DashboardLayout({ children }) {
             )}
 
             {/* Main Content */}
-            <div className={`flex-1 transition-all duration-300 ease-in-out ${open ? "lg:ml-64" : "ml-0"}`}>
+            <div className="flex-1 transition-all duration-300 ease-in-out ml-0 lg:ml-64">
                 <Navbar toggleSidebar={() => setOpen(!open)} />
                 <div className="p-4 sm:p-6 lg:p-8">
                     {children}

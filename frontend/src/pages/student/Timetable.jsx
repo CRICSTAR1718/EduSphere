@@ -16,9 +16,9 @@ function Timetable() {
 
     return (
         <DashboardLayout>
-            <div className="space-y-8 animate-fadeIn">
+            <div className="space-y-6 sm:space-y-8 animate-fadeIn">
 
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-lg sm:text-xl font-semibold">
                     My Class Timetable ({user?.department} Sem {user?.semester})
                 </h2>
 
