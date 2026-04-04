@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
 const allowedOrigins = [
   process.env.CLIENT_URL,
   "http://localhost:5173",
-  "https://edusphere-admin.vercel.app", // Common fallback
+  "https://edu-sphere-nu-two.vercel.app/", // Common fallback
   "https://edusphere.netlify.app"       // Common fallback
 ].filter(Boolean);
 
