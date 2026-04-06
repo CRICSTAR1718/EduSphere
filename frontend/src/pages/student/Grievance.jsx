@@ -82,16 +82,21 @@ function Grievance() {
                                 onChange={(e) => setAssignedTo(e.target.value)}
                                 required
                             >
-                                <optgroup label="Faculty (Your Department)">
-                                    {receivers.faculties?.map(f => (
-                                        <option key={f._id} value={f._id}>{f.name} (Faculty)</option>
-                                    ))}
-                                </optgroup>
-                                <optgroup label="Wardens">
-                                    {receivers.wardens?.map(w => (
-                                        <option key={w._id} value={w._id}>{w.name} (Warden)</option>
-                                    ))}
-                                </optgroup>
+                                <option value="" disabled>Select Faculty or Warden</option>
+                                {receivers.faculties?.length > 0 && (
+                                    <optgroup label="Faculty (Your Department)">
+                                        {receivers.faculties.map(f => (
+                                            <option key={f._id} value={f._id}>{f.name}</option>
+                                        ))}
+                                    </optgroup>
+                                )}
+                                {receivers.wardens?.length > 0 && (
+                                    <optgroup label="Wardens">
+                                        {receivers.wardens.map(w => (
+                                            <option key={w._id} value={w._id}>{w.name}</option>
+                                        ))}
+                                    </optgroup>
+                                )}
                             </select>
                         </div>
                         <div>
