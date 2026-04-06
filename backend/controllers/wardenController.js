@@ -113,7 +113,8 @@ const getHostelLogs = async (req, res) => {
 const getGrievances = async (req, res) => {
     try {
         const { status } = req.query;
-        let query = { assignedTo: req.user._id };
+        // Search by warden name matching assignedTo exactly
+        let query = { assignedTo: req.user.name };
         if (status) query.status = status;
 
         const grievances = await Grievance.find(query)

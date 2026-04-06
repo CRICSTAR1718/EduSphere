@@ -8,9 +8,9 @@ const grievanceSchema = new mongoose.Schema(
             required: true,
         },
         assignedTo: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: [true, "Grievance must be assigned to someone"],
+            type: String,
+            required: [true, "Grievance must be assigned to someone (Name)"],
+            trim: true,
         },
         subject: {
             type: String,

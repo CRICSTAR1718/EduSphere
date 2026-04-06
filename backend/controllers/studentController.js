@@ -277,13 +277,20 @@ const getGrievanceReceivers = async (req, res) => {
             return res.status(404).json({ message: "Student not found" });
         }
 
-        // Fetch faculties in the student's department
-        const faculties = await User.find({ role: "faculty", department: student.department })
-            .select("name email role department");
+        console.log(`Fetching receivers for student: ${student.name}, Dept: ${student.department}`);
 
-        // Fetch all wardens
-        const wardens = await User.find({ role: "warden" })
-            .select("name email role");
+        // Fetch faculties in the student's department (case-insensitive role check)
+        const faculties = await User.find({ 
+            role: { $regex: /^faculty$/i }, 
+            department: student.department 
+        }).select("name email role department");
+
+        // Fetch all wardens (case-insensitive role check)
+        const wardens = await User.find({ 
+            role: { $regex: /^warden$/i } 
+        }).select("name email role");
+
+        console.log(`Found ${faculties.length} faculties and ${wardens.length} wardens`);
 
         res.status(200).json({ faculties, wardens });
     } catch (error) {
@@ -299,8 +306,7 @@ const getGrievances = async (req, res) => {
     try {
         const grievances = await Grievance.find({ student: req.user.id })
             .sort({ createdAt: -1 })
-            .populate("respondedBy", "name")
-            .populate("assignedTo", "name");
+            .populate("respondedBy", "name");
 
         res.status(200).json(grievances);
     } catch (error) {

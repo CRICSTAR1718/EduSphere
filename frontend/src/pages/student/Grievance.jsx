@@ -15,6 +15,7 @@ function Grievance() {
     const fetchGrievances = async () => {
         try {
             const data = await getStudentGrievances();
+            console.log("Fetched Student Grievances:", data);
             setGrievances(data);
         } catch (error) {
             console.error("Error fetching grievances:", error);
@@ -26,9 +27,16 @@ function Grievance() {
     const fetchReceivers = async () => {
         try {
             const data = await getGrievanceReceivers();
-            setReceivers(data);
-            if (data.faculties?.length > 0) setAssignedTo(data.faculties[0]._id);
-            else if (data.wardens?.length > 0) setAssignedTo(data.wardens[0]._id);
+            console.log("Fetched Receivers Payload:", data);
+            
+            // Handle both {faculties: [], wardens: []} and direct array if needed
+            const faculties = data.faculties || [];
+            const wardens = data.wardens || [];
+            
+            setReceivers({ faculties, wardens });
+
+            if (faculties.length > 0) setAssignedTo(faculties[0]._id);
+            else if (wardens.length > 0) setAssignedTo(wardens[0]._id);
         } catch (error) {
             console.error("Error fetching grievance receivers:", error);
         }
@@ -75,29 +83,15 @@ function Grievance() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">To</label>
-                            <select
-                                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none bg-white"
+                            <label className="block text-sm font-medium text-slate-700 mb-1">To (Faculty or Warden Name)</label>
+                            <input
+                                type="text"
+                                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                placeholder="Enter exactly as: Dr. Smith or Prof. Johnson"
                                 value={assignedTo}
                                 onChange={(e) => setAssignedTo(e.target.value)}
                                 required
-                            >
-                                <option value="" disabled>Select Faculty or Warden</option>
-                                {receivers.faculties?.length > 0 && (
-                                    <optgroup label="Faculty (Your Department)">
-                                        {receivers.faculties.map(f => (
-                                            <option key={f._id} value={f._id}>{f.name}</option>
-                                        ))}
-                                    </optgroup>
-                                )}
-                                {receivers.wardens?.length > 0 && (
-                                    <optgroup label="Wardens">
-                                        {receivers.wardens.map(w => (
-                                            <option key={w._id} value={w._id}>{w.name}</option>
-                                        ))}
-                                    </optgroup>
-                                )}
-                            </select>
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Issue Subject</label>
@@ -178,13 +172,13 @@ function GrievanceItem({ data }) {
                     <p className="text-xs font-bold text-indigo-600 mb-1">Official Response:</p>
                     <p className="text-xs text-slate-700 italic">"{data.response}"</p>
                     <div className="mt-2 text-[10px] text-slate-400">
-                        Assigned To: {data.assignedTo?.name || "Unknown"} | Responded by: {data.respondedBy?.name || data.assignedTo?.name || "Staff"} on {new Date(data.respondedAt).toLocaleDateString()}
+                        Responded by: {data.respondedBy?.name || "Staff"} on {new Date(data.respondedAt).toLocaleDateString()}
                     </div>
                 </div>
             )}
             {!data.response && (
                 <div className="mt-2 text-[10px] text-slate-400">
-                    Assigned To: {data.assignedTo ? data.assignedTo.name : "Unknown"}
+                    To: {data.assignedTo || "Unknown"}
                 </div>
             )}
             <div className="mt-3 text-[10px] text-slate-300">
