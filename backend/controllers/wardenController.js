@@ -13,7 +13,7 @@ const getDashboardStats = async (req, res) => {
         const approvedGatepasses = await Gatepass.countDocuments({ status: "approved_by_warden" });
         // Pending grievances (ONLY those assigned specifically to this warden by name AND role)
         const hostelGrievances = await Grievance.countDocuments({ 
-            assignedTo: req.user.name,
+            assignedTo: { $regex: new RegExp(`^${req.user.name}$`, "i") },
             assignedToRole: "warden",
             status: "pending" 
         });
@@ -120,7 +120,7 @@ const getGrievances = async (req, res) => {
         const { status } = req.query;
         // Search by warden name matching assignedTo exactly AND role must be warden
         let query = { 
-            assignedTo: req.user.name,
+            assignedTo: { $regex: new RegExp(`^${req.user.name}$`, "i") },
             assignedToRole: "warden"
         };
         if (status) query.status = status;

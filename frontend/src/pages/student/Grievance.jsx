@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import { submitGrievance, getStudentGrievances } from "../../services/studentService";
+import { submitGrievance, getStudentGrievances, getGrievanceReceivers } from "../../services/studentService";
 
 function Grievance() {
     const [grievances, setGrievances] = useState([]);
@@ -11,6 +11,9 @@ function Grievance() {
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+
+    const [receivers, setReceivers] = useState({ faculties: [], wardens: [] });
+    const [fetchingReceivers, setFetchingReceivers] = useState(true);
 
     const fetchGrievances = async () => {
         try {
@@ -24,9 +27,39 @@ function Grievance() {
         }
     };
 
+    const fetchReceivers = async () => {
+        try {
+            const data = await getGrievanceReceivers();
+            console.log("Fetched Receivers:", data);
+            setReceivers(data);
+            // Default select the first one if available
+            if (assignedToRole === "faculty" && data.faculties.length > 0) {
+                setAssignedTo(data.faculties[0].name);
+            } else if (assignedToRole === "warden" && data.wardens.length > 0) {
+                setAssignedTo(data.wardens[0].name);
+            }
+        } catch (error) {
+            console.error("Error fetching receivers:", error);
+        } finally {
+            setFetchingReceivers(false);
+        }
+    };
+
     useEffect(() => {
         fetchGrievances();
+        fetchReceivers();
     }, []);
+
+    // Update default selection when role changes
+    useEffect(() => {
+        if (assignedToRole === "faculty" && receivers.faculties.length > 0) {
+            setAssignedTo(receivers.faculties[0].name);
+        } else if (assignedToRole === "warden" && receivers.wardens.length > 0) {
+            setAssignedTo(receivers.wardens[0].name);
+        } else {
+            setAssignedTo("");
+        }
+    }, [assignedToRole, receivers]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -99,18 +132,31 @@ function Grievance() {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    {assignedToRole === "faculty" ? "Faculty Name" : "Warden Name"}
+                                    {assignedToRole === "faculty" ? "Select Faculty" : "Select Warden"}
                                 </label>
-                                <input
-                                    type="text"
-                                    className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                    placeholder={assignedToRole === "faculty" ? "e.g. Dr. Smith" : "e.g. Chief Warden"}
-                                    value={assignedTo}
-                                    onChange={(e) => setAssignedTo(e.target.value)}
-                                    required
-                                />
+                                {fetchingReceivers ? (
+                                    <div className="text-xs text-slate-400">Loading options...</div>
+                                ) : (
+                                    <select
+                                        className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        value={assignedTo}
+                                        onChange={(e) => setAssignedTo(e.target.value)}
+                                        required
+                                    >
+                                        <option value="">-- Choose Recipient --</option>
+                                        {assignedToRole === "faculty" 
+                                            ? receivers.faculties.map(f => (
+                                                <option key={f._id} value={f.name}>{f.name} ({f.department})</option>
+                                            ))
+                                            : receivers.wardens.map(w => (
+                                                <option key={w._id} value={w.name}>{w.name}</option>
+                                            ))
+                                        }
+                                    </select>
+                                )}
                             </div>
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Issue Subject</label>
                             <input
