@@ -17,19 +17,27 @@ const getDashboardStats = async (req, res) => {
             assignedToRole: "warden",
             status: "pending" 
         });
-        const totalHostelers = await User.countDocuments({ role: "student" }); // Simplification
+        const totalHostelers = await User.countDocuments({ role: "student" });
+
+        // Get recent gatepass requests
+        const recentRequests = await Gatepass.find({})
+            .populate("student", "name")
+            .sort({ createdAt: -1 })
+            .limit(5);
 
         res.status(200).json({
             pendingGatepasses,
             approvedGatepasses,
             hostelGrievances,
             totalHostelers,
+            recentRequests
         });
     } catch (error) {
         console.error("Warden Dashboard Error:", error);
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 // ==================== GATEPASS MANAGEMENT ====================
 
