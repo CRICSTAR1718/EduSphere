@@ -14,6 +14,9 @@ try {
         }
     });
 
+
+    
+
     if (pids.size > 0) {
         console.log(`Found PIDs on port ${port}: ${Array.from(pids).join(', ')}`);
         pids.forEach(pid => {
@@ -24,6 +27,8 @@ try {
                 console.log(`Failed to kill PID ${pid}: ${kErr.message}`);
             }
         });
+
+        
     } else {
         console.log(`No processes found on port ${port}`);
     }
@@ -34,3 +39,7 @@ try {
         console.log(`Error finding process on port ${port}: ${err.message}`);
     }
 }
+
+
+
+
