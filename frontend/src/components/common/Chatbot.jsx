@@ -21,6 +21,12 @@ const Chatbot = () => {
         }
     }, [messages, isOpen, isLoading]);
 
+    // Pre-warm the chatbot server (fixes 500 timeout error from sleeping Render servers)
+    useEffect(() => {
+        fetch("https://edusphere-chatbot-backend.onrender.com/api/health")
+            .catch(() => console.log("Waking up AI engine..."));
+    }, []);
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim() || isLoading) return;
