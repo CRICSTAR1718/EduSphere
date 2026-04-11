@@ -5,29 +5,30 @@ import Loader from '../../components/common/Loader';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiCheckCircle, FiShield, FiCreditCard, FiArrowRight, FiInfo } from 'react-icons/fi';
-import { getStudentFees } from '../../services/studentService';
+import { getStudentFees, payStudentFee } from '../../services/studentService';
 
 const FeePayment = () => {
     const [selectedMethod, setSelectedMethod] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [paidAmountDisplay, setPaidAmountDisplay] = useState(0);
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchFees = async () => {
-            try {
-                const data = await getStudentFees();
-                setFees(data);
-            } catch (err) {
-                console.error("Error fetching fees for payment:", err);
-                setError("Failed to load fee information. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchFees = async () => {
+        try {
+            const data = await getStudentFees();
+            setFees(data);
+        } catch (err) {
+            console.error("Error fetching fees for payment:", err);
+            setError("Failed to load fee information. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchFees();
     }, []);
 
@@ -75,12 +76,20 @@ const FeePayment = () => {
         { id: 'netbank', name: 'Net Banking', icon: '🏦' }
     ];
 
-    const handlePayment = () => {
+    const handlePayment = async () => {
         setIsProcessing(true);
-        setTimeout(() => {
-            setIsProcessing(false);
+        try {
+            const amountToPay = summaryData.pendingAmount;
+            await payStudentFee({ amount: amountToPay, method: selectedMethod });
+            setPaidAmountDisplay(amountToPay);
+            await fetchFees(); // Refetch updated fee data
             setIsSuccess(true);
-        }, 3000);
+        } catch (err) {
+            console.error("Payment failed", err);
+            alert("Payment failed. Please try again.");
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     return (
@@ -162,7 +171,7 @@ const FeePayment = () => {
                                     </div>
                                     <h2 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
                                     <p className="text-gray-500 max-w-xs mx-auto mb-8">
-                                        Your payment of ₹{summaryData.pendingAmount.toLocaleString()} has been processed and your records are updated.
+                                        Your payment of ₹{paidAmountDisplay.toLocaleString()} has been processed and your records are updated.
                                     </p>
                                     <div className="flex gap-4">
                                         <button className="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-all">

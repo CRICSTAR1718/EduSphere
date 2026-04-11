@@ -1,11 +1,23 @@
 import { NavLink } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 
 function Sidebar({ closeSidebar }) {
 
     const { user } = useContext(AuthContext);
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+        const savedScrollPos = sessionStorage.getItem("sidebarScrollPos");
+        if (savedScrollPos && scrollRef.current) {
+            scrollRef.current.scrollTop = parseInt(savedScrollPos, 10);
+        }
+    }, []);
+
+    const handleScroll = (e) => {
+        sessionStorage.setItem("sidebarScrollPos", e.target.scrollTop);
+    };
 
     return (
         <div className="w-full h-full bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 text-gray-300 flex flex-col border-r border-slate-800 shadow-[4px_0_24px_rgb(0,0,0,0.2)] relative">
@@ -20,7 +32,11 @@ function Sidebar({ closeSidebar }) {
                 </div>
             </div>
 
-            <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+            <div 
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar"
+            >
 
                 <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
                     Main Menu
@@ -35,7 +51,7 @@ function Sidebar({ closeSidebar }) {
                         <SidebarItem to="/student/timetable" label="Timetable" />
                         <SidebarItem to="/student/courses" label="My Courses" />
                         <SidebarItem to="/student/results" label="Results" />
-                        <SidebarItem to="/student/notifications" label="Notifications" />
+
                         <SidebarItem to="/student/grievance" label="Grievance" />
                         <SidebarItem to="/student/gatepass/request" label="Request Gatepass" />
                         <SidebarItem to="/student/gatepass/status" label="Gatepass Status" />

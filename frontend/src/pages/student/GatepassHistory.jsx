@@ -21,23 +21,20 @@ function GatepassHistory() {
         fetchHistory();
     }, []);
 
-    const getStatusStyles = (status) => {
-        switch (status) {
-            case "approved_by_warden":
-                return "bg-green-100 text-green-600";
-            case "rejected_by_parent":
-            case "rejected_by_warden":
-                return "bg-red-100 text-red-600";
-            case "pending_parent":
-            case "approved_by_parent":
-                return "bg-yellow-100 text-yellow-600";
-            default:
-                return "bg-gray-100 text-gray-600";
-        }
+    const getParentStatus = (status) => {
+        if (status === "pending_parent") return { label: "Pending", style: "bg-yellow-100 text-yellow-700 border border-yellow-200" };
+        if (status === "rejected_by_parent") return { label: "Rejected", style: "bg-red-100 text-red-700 border border-red-200" };
+        // For approved_by_parent, approved_by_warden, rejected_by_warden
+        return { label: "Approved", style: "bg-green-100 text-green-700 border border-green-200" }; 
     };
 
-    const getStatusLabel = (status) => {
-        return status.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+    const getWardenStatus = (status) => {
+        if (status === "pending_parent") return { label: "Waiting for Parent", style: "bg-slate-100 text-slate-500 border border-slate-200" };
+        if (status === "rejected_by_parent") return { label: "N/A", style: "bg-slate-100 text-slate-500 border border-slate-200" };
+        if (status === "approved_by_parent") return { label: "Pending", style: "bg-yellow-100 text-yellow-700 border border-yellow-200" };
+        if (status === "approved_by_warden") return { label: "Approved", style: "bg-green-100 text-green-700 border border-green-200" };
+        if (status === "rejected_by_warden") return { label: "Rejected", style: "bg-red-100 text-red-700 border border-red-200" };
+        return { label: "Unknown", style: "bg-slate-100 text-slate-600 border border-slate-200" };
     };
 
     if (loading) {
@@ -61,7 +58,8 @@ function GatepassHistory() {
                                 <th>Reason</th>
                                 <th>Out Date</th>
                                 <th>In Date</th>
-                                <th>Status</th>
+                                <th>Parent Approval</th>
+                                <th>Warden Approval</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,15 +70,20 @@ function GatepassHistory() {
                                     <td>{new Date(item.outDate).toLocaleDateString()}</td>
                                     <td>{new Date(item.inDate).toLocaleDateString()}</td>
                                     <td>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(item.status)}`}>
-                                            {getStatusLabel(item.status)}
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getParentStatus(item.status).style}`}>
+                                            {getParentStatus(item.status).label}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${getWardenStatus(item.status).style}`}>
+                                            {getWardenStatus(item.status).label}
                                         </span>
                                     </td>
                                 </tr>
                             ))}
                             {history.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="py-4 text-center text-gray-500">No gatepass history found.</td>
+                                    <td colSpan="6" className="py-4 text-center text-gray-500">No gatepass history found.</td>
                                 </tr>
                             )}
                         </tbody>

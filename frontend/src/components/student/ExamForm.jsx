@@ -18,7 +18,9 @@ const ExamForm = () => {
         semester: '6th', // Will be overridden by profile data
         examType: 'Regular',
         subjects: [],
-        declaration: false
+        declaration: false,
+        phone: '',
+        email: ''
     });
 
     useEffect(() => {
@@ -33,7 +35,9 @@ const ExamForm = () => {
                 setStudentProfile(profileData);
                 setFormData(prev => ({
                     ...prev,
-                    semester: `${profileData.semester}th` // Assuming formatting like '6th'
+                    semester: `${profileData.semester}th`, // Assuming formatting like '6th'
+                    phone: profileData.phone || '',
+                    email: profileData.email || ''
                 }));
                 
                 // Format courses for the component
@@ -227,6 +231,30 @@ const ExamForm = () => {
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-indigo-500 transition-colors">
                                             <FiChevronRight className="rotate-90" />
                                         </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1">Contact Number</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="tel"
+                                            className="w-full p-4 bg-white/50 rounded-2xl border border-slate-200 text-slate-700 font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            placeholder="Enter 10-digit number"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1">Email Address</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="email"
+                                            className="w-full p-4 bg-white/50 rounded-2xl border border-slate-200 text-slate-700 font-bold focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:font-medium placeholder:text-slate-400"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            placeholder="university@example.com"
+                                        />
                                     </div>
                                 </div>
                             </div>

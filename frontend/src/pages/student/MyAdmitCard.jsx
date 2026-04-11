@@ -6,7 +6,7 @@ const MyAdmitCard = () => {
     return (
         <DashboardLayout>
             <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
-                <header>
+                <header className="print:hidden">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Examination</h1>
                     <p className="text-gray-500 mt-1 text-sm sm:text-base">Access your hall tickets and examination schedule.</p>
                 </header>

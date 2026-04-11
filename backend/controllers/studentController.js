@@ -479,6 +479,29 @@ const getFees = async (req, res) => {
     }
 };
 
+// @desc    Pay fees
+// @route   POST /api/student/pay-fee
+// @access  Private (student)
+const payFee = async (req, res) => {
+    try {
+        const { amount, method } = req.body;
+        
+        const fees = await Fee.find({ student: req.user.id, status: 'pending' });
+        
+        for (const fee of fees) {
+            fee.status = 'paid';
+            fee.paidDate = new Date();
+            fee.transactionId = `TXN${Math.floor(Math.random() * 1000000000)}`;
+            await fee.save();
+        }
+        
+        res.status(200).json({ message: "Payment successful" });
+    } catch (error) {
+        console.error("Pay Fee Error:", error);
+        res.status(500).json({ message: "Server error while processing payment" });
+    }
+};
+
 // ==================== COURSES & EXAMS ====================
 
 // @desc    Get registered courses for the student
@@ -671,6 +694,7 @@ module.exports = {
     requestGatepass,
     getGatepasses,
     getFees,
+    payFee,
     getCourses,
     getExams,
     getAllCourses,

@@ -68,6 +68,11 @@ export const getStudentFees = async () => {
     return data;
 };
 
+export const payStudentFee = async (paymentData) => {
+    const { data } = await API.post("/student/pay-fee", paymentData);
+    return data;
+};
+
 // Courses (dept/semester match)
 export const getStudentCourses = async () => {
     const { data } = await API.get("/student/courses");

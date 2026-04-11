@@ -68,7 +68,8 @@ import WardenProfile from "../pages/warden/Profile";
 
 // Common Pages
 import NoticeBoard from "../pages/common/NoticeBoard";
-import EventsPage from "../pages/common/EventsPage"
+import EventsPage from "../pages/common/EventsPage";
+import NotificationsPage from "../pages/common/NotificationsPage";
 
 function AppRoutes() {
     return (
@@ -520,6 +521,14 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute allowedRoles={["student", "faculty", "admin", "parent", "warden"]}>
                         <EventsPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/notifications"
+                element={
+                    <ProtectedRoute allowedRoles={["student", "faculty", "admin", "parent", "warden"]}>
+                        <NotificationsPage />
                     </ProtectedRoute>
                 }
             />

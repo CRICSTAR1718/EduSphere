@@ -15,6 +15,7 @@ const {
     requestGatepass,
     getGatepasses,
     getFees,
+    payFee,
     getCourses,
     getExams,
     getAllCourses,
@@ -61,6 +62,9 @@ router.get("/gatepasses", getGatepasses);
 
 // GET /api/student/fees — Get fee records
 router.get("/fees", getFees);
+
+// POST /api/student/pay-fee — Mock payment and clear pending fees
+router.post("/pay-fee", payFee);
 
 // GET /api/student/courses — Get courses matching dept/semester
 router.get("/courses", getCourses);

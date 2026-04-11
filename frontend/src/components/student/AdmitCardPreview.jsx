@@ -12,7 +12,7 @@ const AdmitCardPreview = ({ studentData }) => {
     return (
         <div className="flex flex-col gap-4 sm:gap-6">
             {/* Control Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-gray-100 shadow-sm print:hidden">
                 <div>
                     <h2 className="text-base sm:text-lg font-bold text-gray-800">Admit Card Preview</h2>
                     <p className="text-sm text-gray-500">Please verify all details before downloading.</p>
@@ -43,7 +43,7 @@ const AdmitCardPreview = ({ studentData }) => {
             </div>
 
             {/* Warning/Note */}
-            <div className="p-3 sm:p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 items-start">
+            <div className="p-3 sm:p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3 items-start print:hidden">
                 <div className="text-amber-500 mt-0.5">⚠️</div>
                 <p className="text-sm text-amber-800">
                     <strong>Note:</strong> In case of any discrepancy in the details shown, please contact the University Academic Cell immediately.

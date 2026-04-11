@@ -46,9 +46,13 @@ function Navbar({ toggleSidebar }) {
                         {theme === "dark" ? <SunIcon className="w-5 h-5 text-amber-500" /> : <MoonIcon className="w-5 h-5 text-indigo-500" />}
                     </button>
 
-                    <button className="relative p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 rounded-full transition-all">
+                    <button 
+                        onClick={() => navigate('/notifications')}
+                        className="relative p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 rounded-full transition-all"
+                        title="Notifications"
+                    >
                         <BellIcon className="w-5 h-5 dark:text-slate-300" />
-                        <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
+                        <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 border-2 border-white dark:border-slate-900 rounded-full animate-pulse"></span>
                     </button>
 
                     <div className="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
