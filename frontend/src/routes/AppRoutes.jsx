@@ -33,6 +33,7 @@ import FacultyGrievances from "../pages/faculty/FacultyGrievances";
 import MultiLectureAttendance from "../pages/faculty/MultiLectureAttendance";
 import FacultyTimetable from "../pages/faculty/Timetable";
 import FacultyCourses from "../pages/faculty/MyCourses";
+import FacultyProfile from "../pages/faculty/Profile";
 
 // Admin Pages
 import AdminDashboard from "../pages/admin/AdminDashboard";
@@ -45,6 +46,7 @@ import CreateNotice from "../pages/admin/CreateNotice";
 import CreateEvent from "../pages/admin/CreateEvent";
 import ManageTimetable from "../pages/admin/ManageTimetable";
 import ManageCourses from "../pages/admin/ManageCourses";
+import AdminProfile from "../pages/admin/Profile";
 
 
 // Parents pages
@@ -53,6 +55,7 @@ import WardAttendance from "../pages/parent/WardAttendance";
 import GatepassApproval from "../pages/parent/GatepassApproval";
 import InOutLogs from "../pages/parent/InOutLogs";
 import ScheduleMeeting from "../pages/parent/ScheduleMeeting";
+import ParentProfile from "../pages/parent/Profile";
 
 
 // Warden pages 
@@ -60,6 +63,7 @@ import WardenDashboard from "../pages/warden/WardenDashboard";
 import FinalGatepassApproval from "../pages/warden/FinalGatepassApproval";
 import HostelLogs from "../pages/warden/HostelLogs";
 import HostelGrievances from "../pages/warden/HostelGrievances";
+import WardenProfile from "../pages/warden/Profile";
 
 
 // Common Pages
@@ -236,6 +240,15 @@ function AppRoutes() {
             />
 
             <Route
+                path="/faculty/profile"
+                element={
+                    <ProtectedRoute allowedRoles={["faculty"]}>
+                        <FacultyProfile />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/faculty/attendance"
                 element={
                     <ProtectedRoute allowedRoles={["faculty"]}>
@@ -293,6 +306,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute allowedRoles={["admin"]}>
                         <AdminDashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/admin/profile"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <AdminProfile />
                     </ProtectedRoute>
                 }
             />
@@ -396,6 +418,15 @@ function AppRoutes() {
             />
 
             <Route
+                path="/parent/profile"
+                element={
+                    <ProtectedRoute allowedRoles={["parent"]}>
+                        <ParentProfile />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
                 path="/parent/attendance"
                 element={
                     <ProtectedRoute allowedRoles={["parent"]}>
@@ -436,6 +467,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute allowedRoles={["warden"]}>
                         <WardenDashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/warden/profile"
+                element={
+                    <ProtectedRoute allowedRoles={["warden"]}>
+                        <WardenProfile />
                     </ProtectedRoute>
                 }
             />

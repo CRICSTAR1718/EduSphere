@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { ThemeContext } from "../../context/ThemeContext";
 import { Bars3Icon, BellIcon, UserCircleIcon, ArrowRightOnRectangleIcon, SunIcon, MoonIcon } from "@heroicons/react/24/outline";
@@ -6,6 +7,13 @@ import { Bars3Icon, BellIcon, UserCircleIcon, ArrowRightOnRectangleIcon, SunIcon
 function Navbar({ toggleSidebar }) {
     const { user, logout } = useContext(AuthContext);
     const { theme, toggleTheme } = useContext(ThemeContext);
+    const navigate = useNavigate();
+
+    const handleProfileClick = () => {
+        if (user?.role) {
+            navigate(`/${user.role}/profile`);
+        }
+    };
 
     return (
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60 sticky top-0 z-40 transition-colors duration-300">
@@ -46,7 +54,7 @@ function Navbar({ toggleSidebar }) {
                     <div className="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
 
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 group cursor-pointer">
+                        <div className="flex items-center gap-2 group cursor-pointer" onClick={handleProfileClick}>
                             <div className="w-9 h-9 bg-gradient-to-tr from-indigo-100 to-violet-100 dark:from-indigo-600 dark:to-violet-600 text-indigo-600 dark:text-white rounded-full flex items-center justify-center border border-indigo-200/50 dark:border-indigo-500/50 shadow-sm transition-transform group-hover:scale-105">
                                 <UserCircleIcon className="w-6 h-6" />
                             </div>

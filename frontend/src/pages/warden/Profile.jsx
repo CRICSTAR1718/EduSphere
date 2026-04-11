@@ -1,38 +1,10 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { AuthContext } from "../../context/AuthContext";
-import { getStudentProfile } from "../../services/studentService";
 
-function Profile() {
+function WardenProfile() {
     const { user } = useContext(AuthContext);
-    const [profile, setProfile] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const data = await getStudentProfile();
-                setProfile(data);
-            } catch (error) {
-                console.error("Error fetching profile:", error);
-                // Fallback to context user if API fails
-                setProfile(user);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProfile();
-    }, [user]);
-
-    if (loading) {
-        return (
-            <DashboardLayout>
-                <div className="flex items-center justify-center min-h-[50vh]">
-                    <p className="text-slate-500">Loading Profile...</p>
-                </div>
-            </DashboardLayout>
-        );
-    }
+    const [profile, setProfile] = useState({ ...user });
 
     const handlePhotoUpload = (e) => {
         const file = e.target.files[0];
@@ -67,7 +39,7 @@ function Profile() {
                     </div>
                     <div>
                         <h2 className="text-2xl font-semibold text-slate-800 dark:text-white">
-                            Student Information
+                            Warden Information
                         </h2>
                         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your profile details and picture</p>
                     </div>
@@ -76,11 +48,8 @@ function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-700 dark:text-slate-300">
                     <ProfileItem label="Full Name" value={profile?.name} />
                     <ProfileItem label="Email Address" value={profile?.email} />
-                    <ProfileItem label="Department" value={profile?.department || "Not Assigned"} />
-                    <ProfileItem label="Current Semester" value={profile?.semester || "N/A"} />
-                    <ProfileItem label="Enrollment Number" value={profile?.enrollmentNo || "N/A"} />
-                    <ProfileItem label="Phone Number" value={profile?.phone || "Not Provided"} />
-                    <ProfileItem label="Account Status" value={profile?.isActive ? "Active" : "Inactive"} success={profile?.isActive} />
+                    <ProfileItem label="Role" value="Warden" />
+                    <ProfileItem label="Account Status" value="Active" success={true} />
                 </div>
             </div>
         </DashboardLayout>
@@ -92,10 +61,10 @@ function ProfileItem({ label, value, success }) {
         <div className="flex flex-col">
             <p className="text-sm font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">{label}</p>
             <p className={`text-lg font-semibold mt-1 ${success === true ? "text-green-600 dark:text-green-400" : success === false ? "text-red-500 dark:text-red-400" : "text-slate-800 dark:text-slate-200"}`}>
-                {value}
+                {value || "-"}
             </p>
         </div>
     );
 }
 
-export default Profile;
+export default WardenProfile;
