@@ -529,12 +529,15 @@ const getCourses = async (req, res) => {
 // @access  Private/Student
 const getExams = async (req, res) => {
     try {
-        const student = await User.findById(req.user._id);
+        const studentId = req.user._id;
         
-        // Fetch exams related to the student's department and semester
+        // Find courses student is enrolled in
+        const enrollments = await Enrollment.find({ student: studentId, status: "enrolled" });
+        const enrolledCourseIds = enrollments.map(e => e.course);
+
+        // Fetch exams related to the student's enrolled courses
         const exams = await Exam.find({
-            department: student.department,
-            semester: student.semester
+            course: { $in: enrolledCourseIds }
         })
         .populate("course", "title courseCode")
         .sort({ date: 1, startTime: 1 });

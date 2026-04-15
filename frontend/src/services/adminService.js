@@ -144,3 +144,24 @@ export const deleteTimetableEntry = async (id) => {
     const { data } = await API.delete(`/timetable/${id}`);
     return data;
 };
+
+// Exams
+export const getExams = async () => {
+    const { data } = await API.get("/admin/exams");
+    return data;
+};
+
+export const createExam = async (examData) => {
+    const { data } = await API.post("/admin/exams", examData);
+    return data;
+};
+
+export const updateExam = async (id, examData) => {
+    const { data } = await API.put(`/admin/exams/${id}`, examData);
+    return data;
+};
+
+export const deleteExam = async (id) => {
+    const { data } = await API.delete(`/admin/exams/${id}`);
+    return data;
+};

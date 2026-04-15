@@ -46,6 +46,7 @@ import CreateNotice from "../pages/admin/CreateNotice";
 import CreateEvent from "../pages/admin/CreateEvent";
 import ManageTimetable from "../pages/admin/ManageTimetable";
 import ManageCourses from "../pages/admin/ManageCourses";
+import ManageExams from "../pages/admin/ManageExams";
 import AdminProfile from "../pages/admin/Profile";
 
 
@@ -403,6 +404,15 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute allowedRoles={["admin"]}>
                         <ManageCourses />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/admin/manage-exams"
+                element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                        <ManageExams />
                     </ProtectedRoute>
                 }
             />

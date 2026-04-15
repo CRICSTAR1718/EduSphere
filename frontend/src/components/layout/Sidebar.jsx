@@ -95,6 +95,7 @@ function Sidebar({ closeSidebar }) {
                         <SidebarItem to="/admin/calendar" label="Calendar" />
                         <SidebarItem to="/admin/manage-timetable" label="Manage Timetable" />
                         <SidebarItem to="/admin/notices" label="Notices" />
+                        <SidebarItem to="/admin/manage-exams" label="Exam Schedule" />
                         <SidebarItem to="/admin/reports" label="Reports" />
                         <SidebarItem to="/admin/create-notice" label="Create Notice" />
                         <SidebarItem to="/admin/create-event" label="Create Event" />

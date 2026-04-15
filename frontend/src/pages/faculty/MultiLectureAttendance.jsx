@@ -144,6 +144,13 @@ function MultiLectureAttendance() {
         }
     };
 
+    const TIME_SLOTS = [
+        "9:10 - 10:00",
+        "10:05 - 10:55",
+        "11:00 - 11:50",
+        "11:55 - 12:40"
+    ];
+
     return (
         <DashboardLayout>
             <div className="space-y-8 animate-fadeIn">
@@ -195,13 +202,16 @@ function MultiLectureAttendance() {
                         {lectures.map((lecture, index) => (
                             <div key={lecture.id} className="flex items-center gap-3">
                                 <span className="text-sm font-medium text-slate-500 w-24">Lecture {index + 1}</span>
-                                <input
-                                    type="text"
-                                    placeholder="Enter Time Slot (e.g. 10:00 - 11:00)"
-                                    className="flex-1 w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-300 outline-none text-sm"
+                                <select
+                                    className="flex-1 w-full border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-300 outline-none text-sm bg-slate-50"
                                     value={lecture.slot}
                                     onChange={(e) => updateLectureSlot(lecture.id, e.target.value)}
-                                />
+                                >
+                                    <option value="">Select Time Slot</option>
+                                    {TIME_SLOTS.map(slot => (
+                                        <option key={slot} value={slot}>{slot}</option>
+                                    ))}
+                                </select>
                             </div>
                         ))}
 
